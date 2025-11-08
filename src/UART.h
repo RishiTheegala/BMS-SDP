@@ -6,4 +6,4 @@
 
 void UART_Init();
 void UART_Transmit(uint8_t* data);
-uint8_t UART_Receive();
+uint8_t* UART_GetData();

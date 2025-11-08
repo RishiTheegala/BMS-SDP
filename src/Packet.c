@@ -3,12 +3,28 @@
 #include "Packet.h"
 #include "util.h"
 
-void SendCommandPacket(uint8_t *data, int length, uint16_t reg, uint8_t device) {
+#define CHECK_POLY 0xC001
+
+typedef struct __attribute__((packed)) {
+    uint64_t type : 1;        // 1 bit for type (1 = command), equal 1
+    uint64_t command : 3;
+    uint64_t rvsd : 1;          // Reserved bit
+    uint64_t length : 3;
+
+} CMD_PACKET_INIT;
+
+typedef struct __attribute__((packed)) {
+    // device
+    uint64_t rvsd : 2;          // Reserved bits, equal 0
+    uint64_t devID : 6;
+} DEVICE;
+
+void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
     struct CMD_PACKET_INIT packet = {0};
     struct DEVICE dev = {0};
 
     packet.type = 1; // Command
-    packet.command = 0; // No-op command
+    packet.command = cmd; // No-op command
     packet.length = length;
 
     dev.devID = device;
@@ -17,10 +33,16 @@ void SendCommandPacket(uint8_t *data, int length, uint16_t reg, uint8_t device) 
     uint8_t reg_lsb = reg & 0xFF;
     uint8_t reg_msb = (reg >> 8) & 0xFF;
 
-    uint64_t full_packet = 0;;
-    full_packet |= reverse_byte_bits(*((uint8_t*)&packet)) << (24 + (8 * length));
-    full_packet |= reverse_byte_bits(*((uint8_t*)&dev)) << (16 + (8 * length));
-    full_packet |= reverse_byte_bits(((uint8_t)reg_msb) << (8 + (8 * length))) | reverse_byte_bits(((uint64_t)reg_lsb) << (8 * length));
+    uint64_t full_packet = 0;
+    if (device != NULL) {
+        full_packet |= reverse_byte_bits(*((uint8_t*)&packet)) << (24 + (8 * length));
+        full_packet |= reverse_byte_bits(*((uint8_t*)&dev)) << (16 + (8 * length));
+        full_packet |= reverse_byte_bits(((uint8_t)reg_msb) << (8 + (8 * length))) | reverse_byte_bits(((uint8_t)reg_lsb) << (8 * length));
+    } else {
+        full_packet |= reverse_byte_bits(*((uint8_t*)&packet)) << (16 + (8 * length));
+        full_packet |= reverse_byte_bits(((uint8_t)reg_msb) << (8 + (8 * length))) | reverse_byte_bits(((uint8_t)reg_lsb) << (8 * length));
+    }
+
     for (int i = 0; i < length; i++) {
         full_packet |= (reverse_byte_bits((uint8_t)data[i]) << (8 * i));
     }
@@ -30,7 +52,7 @@ void SendCommandPacket(uint8_t *data, int length, uint16_t reg, uint8_t device) 
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
     UART_Transmit((uint8_t*)&packet);
-    UART_Transmit((uint8_t*)&dev);
+    if (device != NULL) UART_Transmit((uint8_t*)&dev);
     UART_Transmit(&reg_lsb);
     UART_Transmit(&reg_msb);
     for (int i = 0; i < length - 5; i++) {
