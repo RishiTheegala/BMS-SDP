@@ -1,3 +1,3 @@
 #include <stdint.h>
 
-uint8_t reverse_byte_bits(uint8_t b);
+uint8_t ReverseByteBits(uint8_t b);

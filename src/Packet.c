@@ -33,21 +33,31 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t reg_lsb = reg & 0xFF;
     uint8_t reg_msb = (reg >> 8) & 0xFF;
 
-    uint64_t full_packet = 0;
-    if (device != NULL) {
-        full_packet |= reverse_byte_bits(*((uint8_t*)&packet)) << (24 + (8 * length));
-        full_packet |= reverse_byte_bits(*((uint8_t*)&dev)) << (16 + (8 * length));
-        full_packet |= reverse_byte_bits(((uint8_t)reg_msb) << (8 + (8 * length))) | reverse_byte_bits(((uint8_t)reg_lsb) << (8 * length));
-    } else {
-        full_packet |= reverse_byte_bits(*((uint8_t*)&packet)) << (16 + (8 * length));
-        full_packet |= reverse_byte_bits(((uint8_t)reg_msb) << (8 + (8 * length))) | reverse_byte_bits(((uint8_t)reg_lsb) << (8 * length));
-    }
+    uint8_t* full_packet;
 
+    if (device != NULL) full_packet = (uint8_t*)malloc(length + 6);
+    else full_packet = (uint8_t*)malloc(length + 5);
+
+    full_packet[0] = 0;
+    full_packet[1] = 0;
     for (int i = 0; i < length; i++) {
-        full_packet |= (reverse_byte_bits((uint8_t)data[i]) << (8 * i));
+        full_packet[i + 2] = ReverseByteBits((uint8_t)data[i]);
+    }
+    full_packet[length + 2] = ReverseByteBits(*((uint8_t*)&reg_lsb));
+    full_packet[length + 3] = ReverseByteBits(*((uint8_t*)&reg_msb));
+
+    uint16_t crc;
+    if (device != NULL) {
+        full_packet[length + 4] = ReverseByteBits(*((uint8_t*)&dev));
+        full_packet[length + 5] = ReverseByteBits(*((uint8_t*)&packet));
+        crc = calculate_crc(full_packet, length + 6);
+    } else {
+        full_packet[length + 4] = ReverseByteBits(*((uint8_t*)&packet));
+        crc = calculate_crc(full_packet, length + 5);
     }
 
-    uint16_t crc = calculate_crc(full_packet, length + 4);
+    free(full_packet);
+
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
@@ -62,21 +72,51 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     UART_Transmit(&crc_msb);
 }
 
-uint16_t calculate_crc(uint64_t data, int length) {
-    uint64_t polynomial = 0b11000000000000101;  // Polynomial from document
-    int bit = length * 8 + 16;
+uint8_t* ReadResponse() {
+    uint8_t* response = UART_GetRxData();
+    int length = response[0];
+    uint8_t* check = (uint8_t*)malloc(3 + length);
+    check[0] = 0;
+    check[1] = 0;
+    memcpy(check + 2, response, 1 + length);
+    uint16_t crc = calculate_crc(check, 3 + length);
+    free(check);
+    uint16_t received_crc = (response[length + 2] << 8) | response[length + 3];
+    if (crc != received_crc) {
+        return NULL;
+    }
+    return response;
+}
 
-    data ^= 0xFFFF << ((length-2)*8);
-    data <<= 16;
+uint16_t calculate_crc(uint8_t* data, int length) {
+    uint32_t polynomial = 0b11000000000000101;  // Polynomial from document
+    
+    int bit = length * 8;
+    
+    int local_bit = (bit - 1) % 8;
+    int byte = (bit - 1)/8;
+    
+    data[byte] ^= 0xFF;
+    data[byte - 1] ^= 0xFF;
 
     while (bit > 16) {
-        while (!(data & (1ULL << (bit - 1)))) {
-            bit--;
+        for (int i = 0; i < 17; i++) {
+            int bit_index = bit - i;
+            int byte_index = (bit_index - 1) / 8;
+            int bit_pos = (bit_index - 1) % 8;
+            int mask_bit = (polynomial >> (16 - i)) & 1;
+
+            data[byte_index] ^= (mask_bit << bit_pos);
         }
-        data ^= polynomial << bit - 17;
+        
+        while (!(data[byte] & (1ULL << local_bit))) {
+            bit--;
+            local_bit = (bit - 1) % 8;
+            byte = (bit - 1)/8;
+        }
     }
+    
+    uint16_t crc = ReverseByteBits(data[1]) << 8 | ReverseByteBits(data[0]);
 
-    uint16_t crc = reverse_byte_bits((data >> 8) & 0xFF) << 8 | reverse_byte_bits(data & 0xFF);
-
-    return crc;  // Final XOR per spec
+    return crc;
 }
