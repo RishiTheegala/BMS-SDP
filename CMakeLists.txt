@@ -82,6 +82,7 @@ target_sources(aer_bms.elf PRIVATE
     Core/Src/syscalls.c
 	#	Core/Src/BQ_Comm.c
 	#Core/Src/Packet.c
+	Core/Src/UART.c
 
     # ASM Sources
     startup_stm32f303x8.s
