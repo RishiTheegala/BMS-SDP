@@ -1,7 +1,9 @@
 #pragma once
 #include <stdint.h>
+#include "util.h"
 
-#define MAX_DATA_LENGTH 4
+uint8_t rx_buffers[NUM_DEVICES][256];
 
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device);
-uint8_t* ReadResponse();
+void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length);
+void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length);
