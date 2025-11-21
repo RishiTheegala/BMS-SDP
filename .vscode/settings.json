@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "stdint.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "vector": "cpp",
+        "xutility": "cpp"
     }
 }
