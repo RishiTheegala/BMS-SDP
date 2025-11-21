@@ -1,8 +1,9 @@
 #include "BQ_Comm.h"
 #include "Packet.h"
 #include "UART.h"
+#include "util.h"
 
-const static int NUM_BQ_DEVICES = 3;
+const static int NUM_BQ_DEVICES = NUM_DEVICES;
 
 void BQ_Init(void) {
     UART_Init();

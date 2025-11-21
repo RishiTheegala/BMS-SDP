@@ -3,6 +3,7 @@
 #include <string.h>
 #include "UART.h"
 #include "Packet.h"
+#include "util.h"
 #include "stm32f3xx_hal_uart.h"
 #include <vector>
 
