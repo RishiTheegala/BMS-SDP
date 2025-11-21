@@ -1,7 +1,9 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include "UART.h"
 #include "Packet.h"
+#include "stm32f3xx_hal_uart.h"
 #include <vector>
 
 #define CHECK_POLY 0xC001
@@ -19,6 +21,17 @@ typedef struct {
     uint64_t rvsd : 2;          // Reserved bits, equal 0
     uint64_t devID : 6;
 } __attribute__((packed)) DEVICE;
+
+typedef struct{
+	UART_HandleTypeDef huart;
+} Packet_Data;
+
+static uint16_t calculate_crc(uint8_t* data, int length);
+static Packet_Data packetData;
+
+void Packet_Init(UART_HandleTypeDef huart) {
+	packetData.huart = huart;
+}
 
 std::vector<uint8_t> rx_buffer;
 
@@ -39,8 +52,8 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     size_t full_len = length + (device != 0 ? 6 : 5);
     std::vector<uint8_t> full_packet(full_len);
 
-    full_packet[0] = 0;
-    full_packet[1] = 0;
+    if (device != 0) full_packet = (uint8_t*)malloc(length + 6);
+    else full_packet = (uint8_t*)malloc(length + 5);
 
     full_packet[0] = 0;
     full_packet[1] = 0;
@@ -51,7 +64,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     full_packet[length + 3] = ReverseByteBits(*((uint8_t*)&reg_msb));
 
     uint16_t crc;
-    if (device != NULL) {
+    if (device != 0) {
         full_packet[length + 4] = ReverseByteBits(*((uint8_t*)&dev));
         full_packet[length + 5] = ReverseByteBits(*((uint8_t*)&packet));
         crc = calculate_crc(full_packet, length + 6);
@@ -63,8 +76,9 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
+//	HAL_UART_Transmit(&packetData.huart,(uint8_t*) &packet, length, 0xFFFF);
     UART_Transmit((uint8_t*)&packet);
-    if (device != NULL) UART_Transmit((uint8_t*)&dev);
+    if (device != 0) UART_Transmit((uint8_t*)&dev);
     UART_Transmit(&reg_lsb);
     UART_Transmit(&reg_msb);
     for (int i = 0; i < length - 5; i++) {
