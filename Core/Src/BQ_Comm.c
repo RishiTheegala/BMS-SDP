@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "BQ_Comm.h"
 #include "Packet.h"
 #include "UART.h"
@@ -11,11 +12,8 @@ void BQ_Init(void) {
 void BQ_AutoAdressing(void) {
     uint8_t data[MAX_DATA_LENGTH];
 
-
-
-
     for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
         data[0] = device; // Assign address sequentially
-        SendCommandPacket(, data, 1, , NULL); // Example command and register
+        SendCommandPacket(0, data, 1, 0, 0); // Example command and register
     }
 }

@@ -1,6 +1,9 @@
-#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include "UART.h"
 #include "Packet.h"
+#include "stm32f3xx_hal_uart.h"
 #include "util.h"
 
 #define CHECK_POLY 0xC001
@@ -10,7 +13,6 @@ typedef struct __attribute__((packed)) {
     uint64_t command : 3;
     uint64_t rvsd : 1;          // Reserved bit
     uint64_t length : 3;
-
 } CMD_PACKET_INIT;
 
 typedef struct __attribute__((packed)) {
@@ -19,9 +21,20 @@ typedef struct __attribute__((packed)) {
     uint64_t devID : 6;
 } DEVICE;
 
+typedef struct{
+	UART_HandleTypeDef huart;
+} Packet_Data;
+
+static uint16_t calculate_crc(uint8_t* data, int length);
+static Packet_Data packetData;
+
+void Packet_Init(UART_HandleTypeDef huart) {
+	packetData.huart = huart;
+}
+
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
-    struct CMD_PACKET_INIT packet = {0};
-    struct DEVICE dev = {0};
+    CMD_PACKET_INIT packet = {0};
+    DEVICE dev = {0};
 
     packet.type = 1; // Command
     packet.command = cmd; // No-op command
@@ -35,7 +48,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
 
     uint8_t* full_packet;
 
-    if (device != NULL) full_packet = (uint8_t*)malloc(length + 6);
+    if (device != 0) full_packet = (uint8_t*)malloc(length + 6);
     else full_packet = (uint8_t*)malloc(length + 5);
 
     full_packet[0] = 0;
@@ -47,7 +60,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     full_packet[length + 3] = ReverseByteBits(*((uint8_t*)&reg_msb));
 
     uint16_t crc;
-    if (device != NULL) {
+    if (device != 0) {
         full_packet[length + 4] = ReverseByteBits(*((uint8_t*)&dev));
         full_packet[length + 5] = ReverseByteBits(*((uint8_t*)&packet));
         crc = calculate_crc(full_packet, length + 6);
@@ -61,8 +74,9 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
+//	HAL_UART_Transmit(&packetData.huart,(uint8_t*) &packet, length, 0xFFFF);
     UART_Transmit((uint8_t*)&packet);
-    if (device != NULL) UART_Transmit((uint8_t*)&dev);
+    if (device != 0) UART_Transmit((uint8_t*)&dev);
     UART_Transmit(&reg_lsb);
     UART_Transmit(&reg_msb);
     for (int i = 0; i < length - 5; i++) {
