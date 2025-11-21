@@ -20,6 +20,8 @@ typedef struct {
     uint64_t devID : 6;
 } __attribute__((packed)) DEVICE;
 
+std::vector<uint8_t> rx_buffer;
+
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
     CMD_PACKET_INIT packet = {0};
     DEVICE dev = {0};
@@ -90,15 +92,25 @@ void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
         if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
     }
 
-    uint8_t* response;
     for (int i = 0; i < numDevices; i++) {
-        response = UART_GetPacket();
-        if (check_crc(response)) {
-            printf("CRC Error on device %d\n", response[1]);
+        GetPacket();
+        if (check_crc(rx_buffer)) {
+            printf("CRC Error on device %d\n", rx_buffer[1]);
         } else {
             for (int j = 0; j < length + 4; j++) {
-                rx_buffers[i][j] = response[j];
+                rx_buffers[i][j] = rx_buffer[j];
             }
+        }
+    }
+}
+
+void GetPacket() {
+    int size = UART_GetByte();
+    rx_buffer = std::vector<uint8_t>(size + 6);
+    if (size) {
+        rx_buffer[0] = size;
+        for (int i = 1; i < size + 6; i++) {
+            rx_buffer[i] = UART_GetByte();
         }
     }
 }
