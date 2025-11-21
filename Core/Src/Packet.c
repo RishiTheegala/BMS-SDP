@@ -27,7 +27,6 @@ typedef struct{
 	UART_HandleTypeDef huart;
 } Packet_Data;
 
-static uint16_t calculate_crc(uint8_t* data, int length);
 static Packet_Data packetData;
 
 void Packet_Init(UART_HandleTypeDef huart) {
@@ -53,8 +52,8 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     size_t full_len = length + (device != 0 ? 6 : 5);
     std::vector<uint8_t> full_packet(full_len);
 
-    if (device != 0) full_packet = (uint8_t*)malloc(length + 6);
-    else full_packet = (uint8_t*)malloc(length + 5);
+    if (device != 0) full_packet = std::vector<uint8_t>(length + 6);
+    else full_packet = std::vector<uint8_t>(length + 5);
 
     full_packet[0] = 0;
     full_packet[1] = 0;
