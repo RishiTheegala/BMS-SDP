@@ -1,0 +1,3 @@
+C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/aer_bms.elf.dir
+C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/edit_cache.dir
+C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/rebuild_cache.dir
