@@ -41,7 +41,7 @@ echo "Configuring project..."
 cd %BUILD_DIR%
 
 :: We run cmake from within the build directory
-cmake -DCMAKE_TOOLCHAIN_FILE=../%TOOLCHAIN_FILE% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+cmake -G "MSYS MakeFiles" -DCMAKE_TOOLCHAIN_FILE=../%TOOLCHAIN_FILE% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
 
 :: Check if CMake configuration failed
 IF %ERRORLEVEL% NEQ 0 (
