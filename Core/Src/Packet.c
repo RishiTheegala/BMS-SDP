@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include "UART.h"
-#include "Packet.h"
+#include <stdlib.h>
+#include "packet.h"
 #include "util.h"
 
 #define CHECK_POLY 0xC001
@@ -10,7 +9,6 @@ typedef struct __attribute__((packed)) {
     uint64_t command : 3;
     uint64_t rvsd : 1;          // Reserved bit
     uint64_t length : 3;
-
 } CMD_PACKET_INIT;
 
 typedef struct __attribute__((packed)) {
@@ -18,11 +16,12 @@ typedef struct __attribute__((packed)) {
     uint64_t rvsd : 2;          // Reserved bits, equal 0
     uint64_t devID : 6;
 } DEVICE;
+static uint16_t calculate_crc(uint8_t* data, int length);
+
+static CMD_PACKET_INIT packet = {0};
+static DEVICE dev = {0};
 
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
-    struct CMD_PACKET_INIT packet = {0};
-    struct DEVICE dev = {0};
-
     packet.type = 1; // Command
     packet.command = cmd; // No-op command
     packet.length = length;
@@ -61,34 +60,34 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
-    UART_Transmit((uint8_t*)&packet);
-    if (device != NULL) UART_Transmit((uint8_t*)&dev);
-    UART_Transmit(&reg_lsb);
-    UART_Transmit(&reg_msb);
-    for (int i = 0; i < length - 5; i++) {
-        UART_Transmit(&data[i]);
-    }
-    UART_Transmit(&crc_lsb);
-    UART_Transmit(&crc_msb);
+    //UART_Transmit((uint8_t*)&packet);
+    //if (device != NULL) UART_Transmit((uint8_t*)&dev);
+    //UART_Transmit(&reg_lsb);
+    //UART_Transmit(&reg_msb);
+//    for (int i = 0; i < length - 5; i++) {
+//        UART_Transmit(&data[i]);
+//    }
+//    UART_Transmit(&crc_lsb);
+//    UART_Transmit(&crc_msb);
 }
 
 uint8_t* ReadResponse() {
-    uint8_t* response = UART_GetRxData();
-    int length = response[0];
-    uint8_t* check = (uint8_t*)malloc(3 + length);
-    check[0] = 0;
-    check[1] = 0;
-    memcpy(check + 2, response, 1 + length);
-    uint16_t crc = calculate_crc(check, 3 + length);
-    free(check);
-    uint16_t received_crc = (response[length + 2] << 8) | response[length + 3];
-    if (crc != received_crc) {
-        return NULL;
-    }
-    return response;
+//    uint8_t* response = UART_GetRxData();
+//    int length = response[0];
+//    uint8_t* check = (uint8_t*)malloc(3 + length);
+//    check[0] = 0;
+//    check[1] = 0;
+//    memcpy(check + 2, response, 1 + length);
+//    uint16_t crc = calculate_crc(check, 3 + length);
+//    free(check);
+//    uint16_t received_crc = (response[length + 2] << 8) | response[length + 3];
+//    if (crc != received_crc) {
+//        return NULL;
+//    }
+//    return response;
 }
 
-uint16_t calculate_crc(uint8_t* data, int length) {
+static uint16_t calculate_crc(uint8_t* data, int length) {
     uint32_t polynomial = 0b11000000000000101;  // Polynomial from document
     
     int bit = length * 8;
