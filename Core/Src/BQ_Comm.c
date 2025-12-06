@@ -14,26 +14,47 @@ void BQ_AutoAdressing() {
     uint8_t data[256];
 
     data[0] = 0;
-    SendCommandPacket(RequestType::BROAD_WRITE, data, 1, Register::OTP_ECC_TEST, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, OTP_ECC_TEST, NULL);
 
     data[0] = 1;
-    SendCommandPacket(RequestType::BROAD_WRITE, data, 1, Register::CONTROL1, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, CONTROL1, NULL);
 
     for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
         data[0] = device; // Assign address sequentially
-        SendCommandPacket(RequestType::BROAD_WRITE, data, 1, Register::DIR0_ADDR, NULL);
+        SendCommandPacket(BROAD_WRITE, data, 1, DIR0_ADDR, NULL);
     }
 
     data[0] = 0x02;
-    SendCommandPacket(RequestType::BROAD_WRITE, data, 1, Register::COMM_CTRL, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, NULL);
     data[0] = 0x00;  
-    SendCommandPacket(RequestType::SINGLE_WRITE, data, 1, Register::COMM_CTRL, 0);
+    SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
     data[0] = 0x03;
-    SendCommandPacket(RequestType::SINGLE_WRITE, data, 1, Register::COMM_CTRL, NUM_BQ_DEVICES - 1);
-
-    DummyReadResponse(RequestType::BROAD_READ, NULL, Register::OTP_ECC_TEST, 1);
+    SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
+    DummyReadResponse(BROAD_READ, NULL, OTP_ECC_TEST, 1);
 
     data[0] = 0xFF;
-    SendCommandPacket(RequestType::BROAD_WRITE, data, 1, Register::FAULT_RST1, NULL);
-    SendCommandPacket(RequestType::BROAD_WRITE, data, 1, Register::FAULT_RST2, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, NULL);
+}
+
+void BQ_ReadVoltages() {
+    uint8_t data[1];
+    data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
+    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+
+
+    data[0] = 0b00000000;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
+    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+}
+
+void BQ_ReadTemps() {
+    uint8_t data[1];
+    data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
+    ReadRegister(SINGLE_READ, 1, CURRENT_HI, 3);
+    int32_t curr;
+    ((uint8_t *)&curr)[2] = rx_buffers[0][4];
+    ((uint8_t *)&curr)[1] = rx_buffers[0][5];
+    ((uint8_t *)&curr)[0] = rx_buffers[0][6];
+    curr = curr << 8;
+    curr = curr >> 8;
 }

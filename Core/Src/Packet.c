@@ -4,7 +4,6 @@
 #include "UART.h"
 #include "Packet.h"
 #include "util.h"
-#include "stm32f3xx_hal_uart.h"
 #include <vector>
 
 #define CHECK_POLY 0xC001
@@ -118,7 +117,7 @@ void GetPacket() {
     int size = UART_GetByte();
     if (size) {
         rx_buffer[0] = size;
-        for (int i = 1; i < size + 6; i++) {
+        for (int i = 1; i < size + 4; i++) {
             rx_buffer[i] = UART_GetByte();
         }
     }
