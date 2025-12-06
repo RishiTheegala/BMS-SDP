@@ -1,4 +1,4 @@
-#include "BQ_Comm.h"
+#include "bq79656.h"
 #include "Packet.h"
 
 const static int NUM_BQ_DEVICES = 3;
