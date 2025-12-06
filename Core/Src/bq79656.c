@@ -1,4 +1,4 @@
-#include "BQ_Comm.h"
+#include "bq79656.h"
 #include "Packet.h"
 #include "UART.h"
 #include "util.h"

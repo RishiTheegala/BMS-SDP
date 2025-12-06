@@ -11,7 +11,7 @@
 
 :: --- Configuration ---
 SET BUILD_DIR=build
-SET TOOLCHAIN_FILE=toolchain.cmake
+SET TOOLCHAIN_FILE=cmake/gcc-arm-none-eabi.cmake
 SET DEFAULT_BUILD_TYPE=Debug
 
 :: --- Script Logic ---
