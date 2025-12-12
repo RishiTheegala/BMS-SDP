@@ -4,7 +4,6 @@
 #include "UART.h"
 #include "Packet.h"
 #include "util.h"
-#include <vector>
 
 #define CHECK_POLY 0xC001
 
@@ -27,6 +26,10 @@ typedef struct{
 } Packet_Data;
 
 static Packet_Data packetData;
+
+void GetPacket();
+uint16_t calculate_crc(uint8_t* data, int length);
+int check_crc(uint8_t* response);
 
 void Packet_Init(UART_HandleTypeDef huart) {
 	packetData.huart = huart;

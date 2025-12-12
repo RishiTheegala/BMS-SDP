@@ -5,36 +5,31 @@
 
 const static int NUM_BQ_DEVICES = NUM_DEVICES;
 
-void BQ_Init() {
-    UART_Init();
-    BQ_AutoAdressing();
-}
-
-void BQ_AutoAdressing() {
+void BQ_AutoAddressing() {
     uint8_t data[256];
 
     data[0] = 0;
-    SendCommandPacket(BROAD_WRITE, data, 1, OTP_ECC_TEST, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, OTP_ECC_TEST, 0);
 
     data[0] = 1;
-    SendCommandPacket(BROAD_WRITE, data, 1, CONTROL1, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, CONTROL1, 0);
 
     for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
         data[0] = device; // Assign address sequentially
-        SendCommandPacket(BROAD_WRITE, data, 1, DIR0_ADDR, NULL);
+        SendCommandPacket(BROAD_WRITE, data, 1, DIR0_ADDR, 0);
     }
 
     data[0] = 0x02;
-    SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, 0);
     data[0] = 0x00;  
     SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
     data[0] = 0x03;
     SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
-    DummyReadResponse(BROAD_READ, NULL, OTP_ECC_TEST, 1);
+    DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
 
     data[0] = 0xFF;
-    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, NULL);
-    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, NULL);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
 }
 
 void BQ_ReadVoltages() {
@@ -57,4 +52,8 @@ void BQ_ReadTemps() {
     ((uint8_t *)&curr)[0] = rx_buffers[0][6];
     curr = curr << 8;
     curr = curr >> 8;
+}
+
+void BQ_Init() {
+    BQ_AutoAddressing();
 }

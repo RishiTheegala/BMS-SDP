@@ -1,32 +1,44 @@
 #include <string.h>
-#include "stm32f4xx_hal.h" // Or appropriate HAL library for your device
+#include "stm32f3xx_hal_uart.h"
+#include "stm32f3xx_hal_gpio.h"
 #include "UART.h"
 
-#define UART_RX_PIN     0
+extern UART_HandleTypeDef huart1;
+
+#define UART_RX_PIN     GPIO_PIN_10
+#define UART_RX_PORT    GPIOA 
 
 extern UART_HandleTypeDef huart1;
 
 static uint8_t pData, rx_buffer[256], rx_index, tx_index = 0;
 
 void send_Wake() {
-    MX_GPIO_Init();
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    // Reconfigure the RX pin as a GPIO Output
+
     GPIO_InitStruct.Pin = UART_RX_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP; // Push-pull output mode
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(UART_RX_PORT, &GPIO_InitStruct);
 
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    // Send pulse
-    HAL_GPIO_WritePin(GPIOA, UART_RX_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(UART_RX_PORT, UART_RX_PIN, GPIO_PIN_RESET);
     HAL_Delay(2);
-    HAL_GPIO_WritePin(GPIOA, UART_RX_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(UART_RX_PORT, UART_RX_PIN, GPIO_PIN_SET);
+
+    HAL_Delay(1);
+
+    GPIO_InitStruct.Pin = UART_RX_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+    HAL_GPIO_Init(UART_RX_PORT, &GPIO_InitStruct);
 }
 
 void UART_Init() {
-    HAL_Init();
     send_Wake();
 }
 
