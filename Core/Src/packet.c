@@ -79,7 +79,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
 
 //	HAL_UART_Transmit(&packetData.huart,(uint8_t*) &packet, length, 0xFFFF);
     UART_Transmit((uint8_t*)&packet);
-    if (device != 0) UART_Transmit((uint8_t*)&dev);
+    if (cmd < 2) UART_Transmit((uint8_t*)&dev);
     UART_Transmit(&reg_lsb);
     UART_Transmit(&reg_msb);
     for (int i = 0; i < length - 5; i++) {
@@ -110,7 +110,7 @@ void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
 
     for (int i = 0; i < numDevices; i++) {
         GetPacket();
-        if (check_crc(rx_buffer)) {
+        if (check_crc(rx_buffer, length)) {
             printf("CRC Error on device %d\n", rx_buffer[1]);
         } else {
             for (int j = 0; j < length + 4; j++) {
@@ -130,8 +130,7 @@ void GetPacket() {
     }
 }
 
-int check_crc(uint8_t* response) {
-    int length = response[0];
+int check_crc(uint8_t* response, int length) {
     uint8_t check[100];
     check[0] = 0;
     check[1] = 0;
