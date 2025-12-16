@@ -3,6 +3,7 @@
 #include "UART.h"
 #include "packet.h"
 #include "util.h"
+#include "stm32f3xx_hal.h"
 
 // Define the rx_buffers array here (declared as extern in packet.h)
 uint8_t rx_buffers[NUM_DEVICES][256];
@@ -86,6 +87,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     }
     UART_Transmit(&crc_lsb);
     UART_Transmit(&crc_msb);
+    HAL_Delay(4);
 }
 
 void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {

@@ -37,7 +37,6 @@ void send_Wake() {
 
 void UART_Transmit(uint8_t* data) {
     HAL_UART_Transmit(&huart1, data, 1, HAL_MAX_DELAY);
-    HAL_Delay(1);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
