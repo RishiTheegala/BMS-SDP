@@ -32,7 +32,7 @@ static Packet_Data packetData;
 
 void GetPacket();
 uint16_t calculate_crc(uint8_t* data, int length);
-int check_crc(uint8_t* response);
+int check_crc(uint8_t* response, int length);
 
 void Packet_Init(UART_HandleTypeDef huart) {
 	packetData.huart = huart;
