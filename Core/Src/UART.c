@@ -1,6 +1,5 @@
 #include <string.h>
 #include "stm32f3xx_hal.h"
-#include "stm32f3xx_hal_gpio.h"
 #include "UART.h"
 
 #define UART_RX_PIN     GPIO_PIN_10
@@ -34,10 +33,6 @@ void send_Wake() {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(UART_RX_PORT, &GPIO_InitStruct);
-}
-
-void UART_Init() {
-    send_Wake();
 }
 
 void UART_Transmit(uint8_t* data) {

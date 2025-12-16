@@ -117,72 +117,37 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named aer_bms.elf
+# Target rules for targets named aer_bms
 
 # Build rule for target.
-aer_bms.elf: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 aer_bms.elf
-.PHONY : aer_bms.elf
+aer_bms: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 aer_bms
+.PHONY : aer_bms
 
 # fast build rule for target.
-aer_bms.elf/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/build
-.PHONY : aer_bms.elf/fast
+aer_bms/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/build
+.PHONY : aer_bms/fast
 
-Core/Src/BQ_Comm.obj: Core/Src/BQ_Comm.c.obj
-.PHONY : Core/Src/BQ_Comm.obj
+#=============================================================================
+# Target rules for targets named STM32_Drivers
 
-# target to build an object file
-Core/Src/BQ_Comm.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/BQ_Comm.c.obj
-.PHONY : Core/Src/BQ_Comm.c.obj
+# Build rule for target.
+STM32_Drivers: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 STM32_Drivers
+.PHONY : STM32_Drivers
 
-Core/Src/BQ_Comm.i: Core/Src/BQ_Comm.c.i
-.PHONY : Core/Src/BQ_Comm.i
-
-# target to preprocess a source file
-Core/Src/BQ_Comm.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/BQ_Comm.c.i
-.PHONY : Core/Src/BQ_Comm.c.i
-
-Core/Src/BQ_Comm.s: Core/Src/BQ_Comm.c.s
-.PHONY : Core/Src/BQ_Comm.s
-
-# target to generate assembly for a file
-Core/Src/BQ_Comm.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/BQ_Comm.c.s
-.PHONY : Core/Src/BQ_Comm.c.s
-
-Core/Src/Packet.obj: Core/Src/Packet.c.obj
-.PHONY : Core/Src/Packet.obj
-
-# target to build an object file
-Core/Src/Packet.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/Packet.c.obj
-.PHONY : Core/Src/Packet.c.obj
-
-Core/Src/Packet.i: Core/Src/Packet.c.i
-.PHONY : Core/Src/Packet.i
-
-# target to preprocess a source file
-Core/Src/Packet.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/Packet.c.i
-.PHONY : Core/Src/Packet.c.i
-
-Core/Src/Packet.s: Core/Src/Packet.c.s
-.PHONY : Core/Src/Packet.s
-
-# target to generate assembly for a file
-Core/Src/Packet.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/Packet.c.s
-.PHONY : Core/Src/Packet.c.s
+# fast build rule for target.
+STM32_Drivers/fast:
+	$(MAKE) $(MAKESILENT) -f cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/build.make cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/build
+.PHONY : STM32_Drivers/fast
 
 Core/Src/UART.obj: Core/Src/UART.c.obj
 .PHONY : Core/Src/UART.obj
 
 # target to build an object file
 Core/Src/UART.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/UART.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/UART.c.obj
 .PHONY : Core/Src/UART.c.obj
 
 Core/Src/UART.i: Core/Src/UART.c.i
@@ -190,7 +155,7 @@ Core/Src/UART.i: Core/Src/UART.c.i
 
 # target to preprocess a source file
 Core/Src/UART.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/UART.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/UART.c.i
 .PHONY : Core/Src/UART.c.i
 
 Core/Src/UART.s: Core/Src/UART.c.s
@@ -198,15 +163,39 @@ Core/Src/UART.s: Core/Src/UART.c.s
 
 # target to generate assembly for a file
 Core/Src/UART.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/UART.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/UART.c.s
 .PHONY : Core/Src/UART.c.s
+
+Core/Src/bq79656.obj: Core/Src/bq79656.c.obj
+.PHONY : Core/Src/bq79656.obj
+
+# target to build an object file
+Core/Src/bq79656.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/bq79656.c.obj
+.PHONY : Core/Src/bq79656.c.obj
+
+Core/Src/bq79656.i: Core/Src/bq79656.c.i
+.PHONY : Core/Src/bq79656.i
+
+# target to preprocess a source file
+Core/Src/bq79656.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/bq79656.c.i
+.PHONY : Core/Src/bq79656.c.i
+
+Core/Src/bq79656.s: Core/Src/bq79656.c.s
+.PHONY : Core/Src/bq79656.s
+
+# target to generate assembly for a file
+Core/Src/bq79656.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/bq79656.c.s
+.PHONY : Core/Src/bq79656.c.s
 
 Core/Src/can.obj: Core/Src/can.c.obj
 .PHONY : Core/Src/can.obj
 
 # target to build an object file
 Core/Src/can.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/can.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/can.c.obj
 .PHONY : Core/Src/can.c.obj
 
 Core/Src/can.i: Core/Src/can.c.i
@@ -214,7 +203,7 @@ Core/Src/can.i: Core/Src/can.c.i
 
 # target to preprocess a source file
 Core/Src/can.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/can.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/can.c.i
 .PHONY : Core/Src/can.c.i
 
 Core/Src/can.s: Core/Src/can.c.s
@@ -222,7 +211,7 @@ Core/Src/can.s: Core/Src/can.c.s
 
 # target to generate assembly for a file
 Core/Src/can.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/can.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/can.c.s
 .PHONY : Core/Src/can.c.s
 
 Core/Src/gpio.obj: Core/Src/gpio.c.obj
@@ -230,7 +219,7 @@ Core/Src/gpio.obj: Core/Src/gpio.c.obj
 
 # target to build an object file
 Core/Src/gpio.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/gpio.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/gpio.c.obj
 .PHONY : Core/Src/gpio.c.obj
 
 Core/Src/gpio.i: Core/Src/gpio.c.i
@@ -238,7 +227,7 @@ Core/Src/gpio.i: Core/Src/gpio.c.i
 
 # target to preprocess a source file
 Core/Src/gpio.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/gpio.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/gpio.c.i
 .PHONY : Core/Src/gpio.c.i
 
 Core/Src/gpio.s: Core/Src/gpio.c.s
@@ -246,7 +235,7 @@ Core/Src/gpio.s: Core/Src/gpio.c.s
 
 # target to generate assembly for a file
 Core/Src/gpio.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/gpio.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/gpio.c.s
 .PHONY : Core/Src/gpio.c.s
 
 Core/Src/main.obj: Core/Src/main.c.obj
@@ -254,7 +243,7 @@ Core/Src/main.obj: Core/Src/main.c.obj
 
 # target to build an object file
 Core/Src/main.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/main.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/main.c.obj
 .PHONY : Core/Src/main.c.obj
 
 Core/Src/main.i: Core/Src/main.c.i
@@ -262,7 +251,7 @@ Core/Src/main.i: Core/Src/main.c.i
 
 # target to preprocess a source file
 Core/Src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/main.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/main.c.i
 .PHONY : Core/Src/main.c.i
 
 Core/Src/main.s: Core/Src/main.c.s
@@ -270,15 +259,39 @@ Core/Src/main.s: Core/Src/main.c.s
 
 # target to generate assembly for a file
 Core/Src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/main.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/main.c.s
 .PHONY : Core/Src/main.c.s
+
+Core/Src/packet.obj: Core/Src/packet.c.obj
+.PHONY : Core/Src/packet.obj
+
+# target to build an object file
+Core/Src/packet.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/packet.c.obj
+.PHONY : Core/Src/packet.c.obj
+
+Core/Src/packet.i: Core/Src/packet.c.i
+.PHONY : Core/Src/packet.i
+
+# target to preprocess a source file
+Core/Src/packet.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/packet.c.i
+.PHONY : Core/Src/packet.c.i
+
+Core/Src/packet.s: Core/Src/packet.c.s
+.PHONY : Core/Src/packet.s
+
+# target to generate assembly for a file
+Core/Src/packet.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/packet.c.s
+.PHONY : Core/Src/packet.c.s
 
 Core/Src/stm32f3xx_hal_msp.obj: Core/Src/stm32f3xx_hal_msp.c.obj
 .PHONY : Core/Src/stm32f3xx_hal_msp.obj
 
 # target to build an object file
 Core/Src/stm32f3xx_hal_msp.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/stm32f3xx_hal_msp.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/stm32f3xx_hal_msp.c.obj
 .PHONY : Core/Src/stm32f3xx_hal_msp.c.obj
 
 Core/Src/stm32f3xx_hal_msp.i: Core/Src/stm32f3xx_hal_msp.c.i
@@ -286,7 +299,7 @@ Core/Src/stm32f3xx_hal_msp.i: Core/Src/stm32f3xx_hal_msp.c.i
 
 # target to preprocess a source file
 Core/Src/stm32f3xx_hal_msp.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/stm32f3xx_hal_msp.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/stm32f3xx_hal_msp.c.i
 .PHONY : Core/Src/stm32f3xx_hal_msp.c.i
 
 Core/Src/stm32f3xx_hal_msp.s: Core/Src/stm32f3xx_hal_msp.c.s
@@ -294,7 +307,7 @@ Core/Src/stm32f3xx_hal_msp.s: Core/Src/stm32f3xx_hal_msp.c.s
 
 # target to generate assembly for a file
 Core/Src/stm32f3xx_hal_msp.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/stm32f3xx_hal_msp.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/stm32f3xx_hal_msp.c.s
 .PHONY : Core/Src/stm32f3xx_hal_msp.c.s
 
 Core/Src/stm32f3xx_it.obj: Core/Src/stm32f3xx_it.c.obj
@@ -302,7 +315,7 @@ Core/Src/stm32f3xx_it.obj: Core/Src/stm32f3xx_it.c.obj
 
 # target to build an object file
 Core/Src/stm32f3xx_it.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/stm32f3xx_it.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/stm32f3xx_it.c.obj
 .PHONY : Core/Src/stm32f3xx_it.c.obj
 
 Core/Src/stm32f3xx_it.i: Core/Src/stm32f3xx_it.c.i
@@ -310,7 +323,7 @@ Core/Src/stm32f3xx_it.i: Core/Src/stm32f3xx_it.c.i
 
 # target to preprocess a source file
 Core/Src/stm32f3xx_it.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/stm32f3xx_it.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/stm32f3xx_it.c.i
 .PHONY : Core/Src/stm32f3xx_it.c.i
 
 Core/Src/stm32f3xx_it.s: Core/Src/stm32f3xx_it.c.s
@@ -318,7 +331,7 @@ Core/Src/stm32f3xx_it.s: Core/Src/stm32f3xx_it.c.s
 
 # target to generate assembly for a file
 Core/Src/stm32f3xx_it.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/stm32f3xx_it.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/stm32f3xx_it.c.s
 .PHONY : Core/Src/stm32f3xx_it.c.s
 
 Core/Src/syscalls.obj: Core/Src/syscalls.c.obj
@@ -326,7 +339,7 @@ Core/Src/syscalls.obj: Core/Src/syscalls.c.obj
 
 # target to build an object file
 Core/Src/syscalls.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/syscalls.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/syscalls.c.obj
 .PHONY : Core/Src/syscalls.c.obj
 
 Core/Src/syscalls.i: Core/Src/syscalls.c.i
@@ -334,7 +347,7 @@ Core/Src/syscalls.i: Core/Src/syscalls.c.i
 
 # target to preprocess a source file
 Core/Src/syscalls.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/syscalls.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/syscalls.c.i
 .PHONY : Core/Src/syscalls.c.i
 
 Core/Src/syscalls.s: Core/Src/syscalls.c.s
@@ -342,7 +355,7 @@ Core/Src/syscalls.s: Core/Src/syscalls.c.s
 
 # target to generate assembly for a file
 Core/Src/syscalls.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/syscalls.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/syscalls.c.s
 .PHONY : Core/Src/syscalls.c.s
 
 Core/Src/sysmem.obj: Core/Src/sysmem.c.obj
@@ -350,7 +363,7 @@ Core/Src/sysmem.obj: Core/Src/sysmem.c.obj
 
 # target to build an object file
 Core/Src/sysmem.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/sysmem.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/sysmem.c.obj
 .PHONY : Core/Src/sysmem.c.obj
 
 Core/Src/sysmem.i: Core/Src/sysmem.c.i
@@ -358,7 +371,7 @@ Core/Src/sysmem.i: Core/Src/sysmem.c.i
 
 # target to preprocess a source file
 Core/Src/sysmem.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/sysmem.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/sysmem.c.i
 .PHONY : Core/Src/sysmem.c.i
 
 Core/Src/sysmem.s: Core/Src/sysmem.c.s
@@ -366,39 +379,15 @@ Core/Src/sysmem.s: Core/Src/sysmem.c.s
 
 # target to generate assembly for a file
 Core/Src/sysmem.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/sysmem.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/sysmem.c.s
 .PHONY : Core/Src/sysmem.c.s
-
-Core/Src/system_stm32f3xx.obj: Core/Src/system_stm32f3xx.c.obj
-.PHONY : Core/Src/system_stm32f3xx.obj
-
-# target to build an object file
-Core/Src/system_stm32f3xx.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/system_stm32f3xx.c.obj
-.PHONY : Core/Src/system_stm32f3xx.c.obj
-
-Core/Src/system_stm32f3xx.i: Core/Src/system_stm32f3xx.c.i
-.PHONY : Core/Src/system_stm32f3xx.i
-
-# target to preprocess a source file
-Core/Src/system_stm32f3xx.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/system_stm32f3xx.c.i
-.PHONY : Core/Src/system_stm32f3xx.c.i
-
-Core/Src/system_stm32f3xx.s: Core/Src/system_stm32f3xx.c.s
-.PHONY : Core/Src/system_stm32f3xx.s
-
-# target to generate assembly for a file
-Core/Src/system_stm32f3xx.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/system_stm32f3xx.c.s
-.PHONY : Core/Src/system_stm32f3xx.c.s
 
 Core/Src/usart.obj: Core/Src/usart.c.obj
 .PHONY : Core/Src/usart.obj
 
 # target to build an object file
 Core/Src/usart.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/usart.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/usart.c.obj
 .PHONY : Core/Src/usart.c.obj
 
 Core/Src/usart.i: Core/Src/usart.c.i
@@ -406,7 +395,7 @@ Core/Src/usart.i: Core/Src/usart.c.i
 
 # target to preprocess a source file
 Core/Src/usart.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/usart.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/usart.c.i
 .PHONY : Core/Src/usart.c.i
 
 Core/Src/usart.s: Core/Src/usart.c.s
@@ -414,399 +403,39 @@ Core/Src/usart.s: Core/Src/usart.c.s
 
 # target to generate assembly for a file
 Core/Src/usart.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Core/Src/usart.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/usart.c.s
 .PHONY : Core/Src/usart.c.s
 
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.obj
+Core/Src/util.obj: Core/Src/util.c.obj
+.PHONY : Core/Src/util.obj
 
 # target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.obj
+Core/Src/util.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/util.c.obj
+.PHONY : Core/Src/util.c.obj
 
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.i
+Core/Src/util.i: Core/Src/util.c.i
+.PHONY : Core/Src/util.i
 
 # target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.i
+Core/Src/util.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/util.c.i
+.PHONY : Core/Src/util.c.i
 
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.s
+Core/Src/util.s: Core/Src/util.c.s
+.PHONY : Core/Src/util.s
 
 # target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c.s
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.obj: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.obj
-
-# target to build an object file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.obj
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.obj
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.i: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.i
-
-# target to preprocess a source file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.i
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.i
-
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.s: Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.s
-
-# target to generate assembly for a file
-Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.s
-.PHONY : Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c.s
+Core/Src/util.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/util.c.s
+.PHONY : Core/Src/util.c.s
 
 startup_stm32f303x8.obj: startup_stm32f303x8.s.obj
 .PHONY : startup_stm32f303x8.obj
 
 # target to build an object file
 startup_stm32f303x8.s.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.elf.dir/build.make CMakeFiles/aer_bms.elf.dir/startup_stm32f303x8.s.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/startup_stm32f303x8.s.obj
 .PHONY : startup_stm32f303x8.s.obj
 
 # Help Target
@@ -817,16 +446,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... aer_bms.elf"
-	@echo "... Core/Src/BQ_Comm.obj"
-	@echo "... Core/Src/BQ_Comm.i"
-	@echo "... Core/Src/BQ_Comm.s"
-	@echo "... Core/Src/Packet.obj"
-	@echo "... Core/Src/Packet.i"
-	@echo "... Core/Src/Packet.s"
+	@echo "... STM32_Drivers"
+	@echo "... aer_bms"
 	@echo "... Core/Src/UART.obj"
 	@echo "... Core/Src/UART.i"
 	@echo "... Core/Src/UART.s"
+	@echo "... Core/Src/bq79656.obj"
+	@echo "... Core/Src/bq79656.i"
+	@echo "... Core/Src/bq79656.s"
 	@echo "... Core/Src/can.obj"
 	@echo "... Core/Src/can.i"
 	@echo "... Core/Src/can.s"
@@ -836,6 +463,9 @@ help:
 	@echo "... Core/Src/main.obj"
 	@echo "... Core/Src/main.i"
 	@echo "... Core/Src/main.s"
+	@echo "... Core/Src/packet.obj"
+	@echo "... Core/Src/packet.i"
+	@echo "... Core/Src/packet.s"
 	@echo "... Core/Src/stm32f3xx_hal_msp.obj"
 	@echo "... Core/Src/stm32f3xx_hal_msp.i"
 	@echo "... Core/Src/stm32f3xx_hal_msp.s"
@@ -848,60 +478,12 @@ help:
 	@echo "... Core/Src/sysmem.obj"
 	@echo "... Core/Src/sysmem.i"
 	@echo "... Core/Src/sysmem.s"
-	@echo "... Core/Src/system_stm32f3xx.obj"
-	@echo "... Core/Src/system_stm32f3xx.i"
-	@echo "... Core/Src/system_stm32f3xx.s"
 	@echo "... Core/Src/usart.obj"
 	@echo "... Core/Src/usart.i"
 	@echo "... Core/Src/usart.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash_ex.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_gpio.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr_ex.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.s"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.obj"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.i"
-	@echo "... Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.s"
+	@echo "... Core/Src/util.obj"
+	@echo "... Core/Src/util.i"
+	@echo "... Core/Src/util.s"
 	@echo "... startup_stm32f303x8.obj"
 .PHONY : help
 

@@ -64,7 +64,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     full_packet[length + 3] = ReverseByteBits(*((uint8_t*)&reg_msb));
 
     uint16_t crc;
-    if (device != 0) {
+    if (cmd < 2) {
         full_packet[length + 4] = ReverseByteBits(*((uint8_t*)&dev));
         full_packet[length + 5] = ReverseByteBits(*((uint8_t*)&packet));
         crc = calculate_crc(full_packet, length + 6);

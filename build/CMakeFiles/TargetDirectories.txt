@@ -1,3 +1,6 @@
-C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/aer_bms.elf.dir
+C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/aer_bms.dir
 C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/edit_cache.dir
 C:/Users/ejper/projects/BMS-SDP/build/CMakeFiles/rebuild_cache.dir
+C:/Users/ejper/projects/BMS-SDP/build/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+C:/Users/ejper/projects/BMS-SDP/build/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+C:/Users/ejper/projects/BMS-SDP/build/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

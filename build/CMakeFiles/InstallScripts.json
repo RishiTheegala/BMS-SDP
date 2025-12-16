@@ -1,7 +1,8 @@
 {
 	"InstallScripts" : 
 	[
-		"C:/Users/ejper/projects/BMS-SDP/build/cmake_install.cmake"
+		"C:/Users/ejper/projects/BMS-SDP/build/cmake_install.cmake",
+		"C:/Users/ejper/projects/BMS-SDP/build/cmake/stm32cubemx/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

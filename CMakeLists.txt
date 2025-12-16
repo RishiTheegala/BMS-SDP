@@ -47,6 +47,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 	Core/Src/bq79656.c
 	Core/Src/packet.c
 	Core/Src/util.c
+    Core/Src/UART.c
 )
 
 # Add include paths
