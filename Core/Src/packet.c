@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "UART.h"
-#include "Packet.h"
+#include "packet.h"
 #include "util.h"
 
 #define CHECK_POLY 0xC001
