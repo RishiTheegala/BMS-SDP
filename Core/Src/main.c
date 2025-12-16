@@ -19,8 +19,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "stm32f303x8.h"
+#include "stm32f3xx_hal.h"
+#include "stm32f3xx_hal_gpio.h"
 #include "usart.h"
 #include "gpio.h"
+#include "bq79656.h"
+#include "UART.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -88,10 +93,17 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+
+  send_Wake();
+
   MX_CAN_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  // BQ_AutoAddressing();
+  //BQ_ReadVoltages();
+  // BQ_ReadTemps();
+
 
   /* USER CODE END 2 */
 
@@ -99,6 +111,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

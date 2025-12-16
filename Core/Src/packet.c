@@ -4,6 +4,9 @@
 #include "packet.h"
 #include "util.h"
 
+// Define the rx_buffers array here (declared as extern in packet.h)
+uint8_t rx_buffers[NUM_DEVICES][256];
+
 #define CHECK_POLY 0xC001
 
 typedef struct {
@@ -98,7 +101,7 @@ void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
     SendCommandPacket(cmd, data, 1, reg, device);
 
     int numDevices = 1;
-    if (device == NULL) {
+    if ((int)device < 0) {
         numDevices = NUM_DEVICES;
         if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
     }

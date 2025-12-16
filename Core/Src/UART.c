@@ -1,9 +1,7 @@
 #include <string.h>
-#include "stm32f3xx_hal_uart.h"
+#include "stm32f3xx_hal.h"
 #include "stm32f3xx_hal_gpio.h"
 #include "UART.h"
-
-extern UART_HandleTypeDef huart1;
 
 #define UART_RX_PIN     GPIO_PIN_10
 #define UART_RX_PORT    GPIOA 
@@ -44,7 +42,7 @@ void UART_Init() {
 
 void UART_Transmit(uint8_t* data) {
     HAL_UART_Transmit(&huart1, data, 1, HAL_MAX_DELAY);
-    HAL_Delay(1); // Small delay to ensure data is sent
+    HAL_Delay(1);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
