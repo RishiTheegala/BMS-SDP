@@ -51,3 +51,10 @@ void BQ_ReadTemps() {
     curr = curr << 8;
     curr = curr >> 8;
 }
+
+void BQ_ClearFaults() {
+    uint8_t data[1];
+    data[0] = 0xFF;
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
+}

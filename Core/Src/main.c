@@ -112,7 +112,7 @@ int main(void)
   while (1)
   {
     HAL_UART_Transmit(&huart2, (uint8_t *)"Hello, World!\r\n", 15, HAL_MAX_DELAY);
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+    // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
