@@ -24,15 +24,6 @@ void send_Wake() {
     HAL_GPIO_WritePin(UART_RX_PORT, UART_RX_PIN, GPIO_PIN_RESET);
     HAL_Delay(2);
     HAL_GPIO_WritePin(UART_RX_PORT, UART_RX_PIN, GPIO_PIN_SET);
-
-    HAL_Delay(1);
-
-    GPIO_InitStruct.Pin = UART_RX_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
-    HAL_GPIO_Init(UART_RX_PORT, &GPIO_InitStruct);
 }
 
 void UART_Transmit(uint8_t* data) {
