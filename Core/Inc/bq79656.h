@@ -323,7 +323,10 @@ typedef enum Register {
     CURRENT_LO = 0x5D8
 } Register;
 
+void BQ_Thread();
+void BQ_SetFaultState();
 void BQ_AutoAddressing();
-void BQ_ReadVoltages();
-void BQ_ReadTemps();
+int32_t BQ_GetCurrent();
+
+void BQ_ReadCurrent();
 #endif

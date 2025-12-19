@@ -70,13 +70,13 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
 //	HAL_UART_Transmit(&packetData.huart,(uint8_t*) &packet, length, 0xFFFF);
     UART_Transmit((uint8_t*)&packet);
     if (cmd < 2) UART_Transmit((&device));
-    UART_Transmit(&reg_lsb);
     UART_Transmit(&reg_msb);
-    for (int i = 0; i < length; i++) {
+    UART_Transmit(&reg_lsb);
+    for (int i = length - 1; i >= 0; i--) {
         UART_Transmit(&data[i]);
     }
-    UART_Transmit(&crc_lsb);
     UART_Transmit(&crc_msb);
+    UART_Transmit(&crc_lsb);
     HAL_Delay(4);
 }
 
@@ -89,11 +89,11 @@ void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length
 
 void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
     uint8_t data[1];
-    data[0] = length;
+    data[0] = length - 1;
     SendCommandPacket(cmd, data, 1, reg, device);
 
     int numDevices = 1;
-    if ((int)device < 0) {
+    if (cmd > 1) {
         numDevices = NUM_DEVICES;
         if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
     }
