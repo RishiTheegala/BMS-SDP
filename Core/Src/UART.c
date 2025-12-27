@@ -4,9 +4,7 @@
 
 extern UART_HandleTypeDef huart1;
 
-//DEBUG
 extern UART_HandleTypeDef huart2;
-
 
 static uint8_t pData, rx_buffer[256], rx_index, tx_index = 0;
 
@@ -20,7 +18,7 @@ void UART_Transmit(uint8_t* data) {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    // HAL_UART_Transmit(&huart2, &pData, 1, HAL_MAX_DELAY);
+    // HAL_UART_Transmit(&huart2, (uint8_t *)"Hello", 5, HAL_MAX_DELAY);
     if (huart->Instance == USART1)
     {
         // Process received data in rx_buffer
@@ -42,7 +40,7 @@ int UART_ClearRX() {
 
 uint8_t UART_GetByte() {
     uint8_t resp = rx_buffer[rx_index];
-    if (rx_index == tx_index) {
+    if (rx_index != tx_index) {
         rx_buffer[rx_index++] = 0;
         if (rx_index >= sizeof(rx_buffer) / sizeof(rx_buffer[0])) rx_index = 0;
     }

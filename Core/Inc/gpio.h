@@ -39,7 +39,7 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void send_Wake();
+void send_Wake(int ms_delay);
 
 /* USER CODE END Prototypes */
 

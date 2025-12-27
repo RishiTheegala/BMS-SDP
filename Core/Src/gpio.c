@@ -64,10 +64,7 @@ void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 2 */
 
-void send_Wake() {
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
+void send_Wake(int ms_delay) {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     GPIO_InitStruct.Pin = UART_RX_PIN;
@@ -77,8 +74,19 @@ void send_Wake() {
     HAL_GPIO_Init(UART_RX_PORT, &GPIO_InitStruct);
 
     HAL_GPIO_WritePin(UART_RX_PORT, UART_RX_PIN, GPIO_PIN_RESET);
-    HAL_Delay(2);
+    HAL_Delay(ms_delay);
     HAL_GPIO_WritePin(UART_RX_PORT, UART_RX_PIN, GPIO_PIN_SET);
+
+    GPIO_InitStruct.Pin = UART_RX_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* Enable NVIC for USART1 interrupts */
+    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
 }
 
 /* USER CODE END 2 */

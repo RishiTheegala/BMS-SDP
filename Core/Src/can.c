@@ -19,8 +19,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
+#include "bq79656.h"
 
 /* USER CODE BEGIN 0 */
+
+typedef struct
+{
+    uint8_t fault;
+} CAN_Message;
+
+CAN_Message can_message;
 
 /* USER CODE END 0 */
 
@@ -113,5 +121,8 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+void CAN_Main(void)
+{
+    
+}
 /* USER CODE END 1 */
