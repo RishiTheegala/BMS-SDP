@@ -98,7 +98,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   send_Wake(2);
-  send_Wake(2);
+  // send_Wake(2);
   // UART_Init();
   // BQ_Init();
 
@@ -117,7 +117,7 @@ int main(void)
     // data[2] = 0xB7;
     // data[3] = 0x02;
     // SendCommandPacket(BROAD_WRITE, data, 4, OTP_PROG_UNLOCK1A, 0);
-    // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
     // BQ_ReadVoltages();
     // int16_t vol = BQ_GetVoltage(0);
     // HAL_UART_Transmit(&huart2, (uint8_t *)&vol, 2, HAL_MAX_DELAY);
