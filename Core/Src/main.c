@@ -25,6 +25,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "bq79656.h"
+#include "timer.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -96,11 +97,11 @@ int main(void)
   MX_CAN_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  send_Wake(2);
-  // send_Wake(2);
-  // UART_Init();
-  // BQ_Init();
+  send_Wake(2100);
+  UART_Init();
+  BQ_Init();
 
 
   /* USER CODE END 2 */
@@ -110,15 +111,13 @@ int main(void)
   uint8_t data[100];
   while (1)
   {
-    HAL_UART_Transmit(&huart2, (uint8_t *)"H", 1, HAL_MAX_DELAY);
-    send_Wake(2);
     // data[0] = 0xBC;
     // data[1] = 0x78;
     // data[2] = 0xB7;
     // data[3] = 0x02;
     // SendCommandPacket(BROAD_WRITE, data, 4, OTP_PROG_UNLOCK1A, 0);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-    // BQ_ReadVoltages();
+    BQ_ReadVoltages();
     // int16_t vol = BQ_GetVoltage(0);
     // HAL_UART_Transmit(&huart2, (uint8_t *)&vol, 2, HAL_MAX_DELAY);
 

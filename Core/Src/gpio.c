@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#include "timer.h"
 
 /* USER CODE BEGIN 0 */
 #define UART_TX_PIN     GPIO_PIN_9
@@ -64,7 +65,7 @@ void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 2 */
 
-void send_Wake(int ms_delay) {
+void send_Wake(int us_delay) {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     GPIO_InitStruct.Pin = UART_TX_PIN;
@@ -74,7 +75,7 @@ void send_Wake(int ms_delay) {
 
     HAL_GPIO_Init(UART_TX_PORT, &GPIO_InitStruct);
     HAL_GPIO_WritePin(UART_TX_PORT, UART_TX_PIN, GPIO_PIN_RESET);
-    HAL_Delay(ms_delay);
+    delay_us(us_delay);
     HAL_GPIO_WritePin(UART_TX_PORT, UART_TX_PIN, GPIO_PIN_SET);
 
     GPIO_InitStruct.Pin = UART_TX_PIN;
