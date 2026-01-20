@@ -45,7 +45,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+extern UART_HandleTypeDef huart1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -100,8 +100,10 @@ int main(void)
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   send_Wake(2100);
-  UART_Init();
-  BQ_Init();
+  send_Wake(2100);
+  UART_Init(&huart1);
+  Packet_Init(&huart1);
+  BQ_AutoAddressing();
 
 
   /* USER CODE END 2 */
@@ -117,7 +119,11 @@ int main(void)
     // data[3] = 0x02;
     // SendCommandPacket(BROAD_WRITE, data, 4, OTP_PROG_UNLOCK1A, 0);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-    BQ_ReadVoltages();
+    // HAL_UART_Transmit(&huart2, (uint8_t *)"Looping\r\n", 10, HAL_MAX_DELAY);
+
+    // DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
+    ReadRegister(SINGLE_READ, 0, OTP_ECC_TEST, 1);
+    // BQ_ReadVoltages();
     // int16_t vol = BQ_GetVoltage(0);
     // HAL_UART_Transmit(&huart2, (uint8_t *)&vol, 2, HAL_MAX_DELAY);
 

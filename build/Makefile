@@ -382,6 +382,30 @@ Core/Src/sysmem.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/sysmem.c.s
 .PHONY : Core/Src/sysmem.c.s
 
+Core/Src/timer.obj: Core/Src/timer.c.obj
+.PHONY : Core/Src/timer.obj
+
+# target to build an object file
+Core/Src/timer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/timer.c.obj
+.PHONY : Core/Src/timer.c.obj
+
+Core/Src/timer.i: Core/Src/timer.c.i
+.PHONY : Core/Src/timer.i
+
+# target to preprocess a source file
+Core/Src/timer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/timer.c.i
+.PHONY : Core/Src/timer.c.i
+
+Core/Src/timer.s: Core/Src/timer.c.s
+.PHONY : Core/Src/timer.s
+
+# target to generate assembly for a file
+Core/Src/timer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/aer_bms.dir/build.make CMakeFiles/aer_bms.dir/Core/Src/timer.c.s
+.PHONY : Core/Src/timer.c.s
+
 Core/Src/usart.obj: Core/Src/usart.c.obj
 .PHONY : Core/Src/usart.obj
 
@@ -478,6 +502,9 @@ help:
 	@echo "... Core/Src/sysmem.obj"
 	@echo "... Core/Src/sysmem.i"
 	@echo "... Core/Src/sysmem.s"
+	@echo "... Core/Src/timer.obj"
+	@echo "... Core/Src/timer.i"
+	@echo "... Core/Src/timer.s"
 	@echo "... Core/Src/usart.obj"
 	@echo "... Core/Src/usart.i"
 	@echo "... Core/Src/usart.s"

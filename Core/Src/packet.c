@@ -19,7 +19,7 @@ typedef struct {
 } __attribute__((packed)) CMD_PACKET_INIT;
 
 typedef struct{
-	UART_HandleTypeDef huart;
+	UART_HandleTypeDef *huart;
 } Packet_Data;
 
 static Packet_Data packetData;
@@ -28,7 +28,7 @@ void GetPacket();
 uint16_t calculate_crc(uint8_t* data, int length);
 int check_crc(uint8_t* response, int length);
 
-void Packet_Init(UART_HandleTypeDef huart) {
+void Packet_Init(UART_HandleTypeDef *huart) {
 	packetData.huart = huart;
 }
 
@@ -68,15 +68,18 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
 //	HAL_UART_Transmit(&packetData.huart,(uint8_t*) &packet, length, 0xFFFF);
-    UART_Transmit((uint8_t*)&packet);
-    if (cmd < 2) UART_Transmit((&device));
-    UART_Transmit(&reg_msb);
-    UART_Transmit(&reg_lsb);
+    uint8_t send_packet[100];
+    send_packet[0] = ((uint8_t*)&packet)[0];
+    if (cmd < 2) send_packet[1] = device;
+    send_packet[cmd < 2 ? 2 : 1] = reg_msb;
+    send_packet[cmd < 2 ? 3 : 2] = reg_lsb;
     for (int i = length - 1; i >= 0; i--) {
-        UART_Transmit(&data[i]);
+        send_packet[(cmd < 2 ? 4 : 3) + (length - 1 - i)] = data[i];
     }
-    UART_Transmit(&crc_msb);
-    UART_Transmit(&crc_lsb);
+    send_packet[(cmd < 2 ? 4 : 3) + length] = crc_msb;
+    send_packet[(cmd < 2 ? 5 : 4) + length] = crc_lsb;
+
+    HAL_UART_Transmit(packetData.huart, (uint8_t*) &send_packet, (cmd < 2 ? 6 : 5) + length, 0xFFFF);
     HAL_Delay(4);
 }
 

@@ -2,24 +2,31 @@
 #include "stm32f3xx_hal.h"
 #include "UART.h"
 
-extern UART_HandleTypeDef huart1;
-
 extern UART_HandleTypeDef huart2;
+
+typedef struct{
+    UART_HandleTypeDef *huart;
+} UART_Data;
+
+static UART_Data uartData;
 
 static uint8_t pData, rx_buffer[256], rx_index, tx_index = 0;
 
-void UART_Init() {
-    HAL_UART_Receive_IT(&huart1, &pData, 1);
-}
-
-void UART_Transmit(uint8_t* data) {
-    HAL_UART_Transmit(&huart1, data, 1, HAL_MAX_DELAY);
+void UART_Init(UART_HandleTypeDef *huart) {
+    uartData.huart = huart;
+    HAL_UART_Receive_IT(uartData.huart, &pData, 1);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    // HAL_UART_Transmit(&huart2, (uint8_t *)"Hello", 5, HAL_MAX_DELAY);
-    if (huart->Instance == USART1)
+    if (huart != uartData.huart)
+    {
+        return;
+    }
+
+    HAL_UART_Transmit(&huart2, &pData, 1, HAL_MAX_DELAY);
+
+    if (huart->Instance == uartData.huart->Instance)
     {
         // Process received data in rx_buffer
         rx_buffer[tx_index++] = pData;
@@ -27,7 +34,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         if (tx_index >= sizeof(rx_buffer) / sizeof(rx_buffer[0])) tx_index = 0; // Prevent overflow
 
         // Re-enable reception for the next data
-        HAL_UART_Receive_IT(&huart1, &pData, 1);
+        HAL_UART_Receive_IT(uartData.huart, &pData, 1);
     }
 }
 

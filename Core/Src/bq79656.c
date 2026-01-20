@@ -40,9 +40,9 @@ void BQ_Init() {
     SendCommandPacket(BROAD_WRITE, data_arr_, 1, COMM_TIMEOUT_CONF, 0);
 
     // set active cells for OV/UV
-    uint8_t series_per_segment = 16; // TODO: set correctly
-    data_arr_[0] = 0b00001111 & (series_per_segment - 6);
-    SendCommandPacket(BROAD_WRITE, data_arr_, 1, ACTIVE_CELL, 0);
+    // uint8_t series_per_segment = 16; // TODO: set correctly
+    // data_arr_[0] = 0b00001111 & (series_per_segment - 6);
+    // SendCommandPacket(BROAD_WRITE, data_arr_, 1, ACTIVE_CELL, 0);
 
     // enable TSREF
     data_arr_[0] = 0b00000001;
@@ -85,7 +85,7 @@ void BQ_Main() {
 
             //if () { // GPIO checking NFAULT pin is low
                 current_state = STATE_ACTIVE;
-                send_Wake(1);
+                send_Wake(1000);
                 HAL_Delay(10);
                 DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
             //}
@@ -110,17 +110,17 @@ void BQ_AutoAddressing() {
         SendCommandPacket(BROAD_WRITE, data, 1, DIR0_ADDR, 0);
     }
 
-    // data[0] = 0x02;
-    // SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, 0);
-    // data[0] = 0x00;  
-    // SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
-    // data[0] = 0x03;
-    // SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
+    data[0] = 0x02;
+    SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, 0);
+    data[0] = 0x00;  
+    SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
+    data[0] = 0x03;
+    SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
     DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
 
-    data[0] = 0xFF;
-    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
-    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
+    // data[0] = 0xFF;
+    // SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
+    // SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
 }
 
 void BQ_SetFaultState() {
@@ -219,22 +219,22 @@ void BQ_StopBalancing() {
 
 }
 
-void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float ut_thresh) {
-    uint8_t data_arr_[1];
-    uint8_t ov_offset = (ov_thresh - 4.175f) / 0.025f;
-    data_arr_[0] = 0b00111111 & (ov_offset + 0x22);
-    SendCommandPacket(STACK_WRITE, data_arr_, 1, OV_THRESH, 0);
+// void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float ut_thresh) {
+//     uint8_t data_arr_[1];
+//     uint8_t ov_offset = (ov_thresh - 4.175f) / 0.025f;
+//     data_arr_[0] = 0b00111111 & (ov_offset + 0x22);
+//     SendCommandPacket(STACK_WRITE, data_arr_, 1, OV_THRESH, 0);
 
-    uint8_t uv_offset = (uv_thresh - 1.2f) / 0.050f;
-    data_arr_[0] = 0b00111111 & uv_offset;
-    SendCommandPacket(STACK_WRITE, data_arr_, 1, UV_THRESH, 0);
+//     uint8_t uv_offset = (uv_thresh - 1.2f) / 0.050f;
+//     data_arr_[0] = 0b00111111 & uv_offset;
+//     SendCommandPacket(STACK_WRITE, data_arr_, 1, UV_THRESH, 0);
 
-    uint8_t ut_offset = ((TEMP_TO_VOL(ut_thresh) / 5.0f) * (100 / 2)) - 66;
-    uint8_t ot_offset = ((TEMP_TO_VOL(ot_thresh) / 5.0f) * 100) - 10;
-    data_arr_[0] = (0b11100000 & (ut_offset << 5)) | (0b00011111 & ot_offset);
-    SendCommandPacket(STACK_WRITE, data_arr_, 1, OTUT_THRESH, 0);
-    delay(5);
-}
+//     uint8_t ut_offset = ((TEMP_TO_VOL(ut_thresh) / 5.0f) * (100 / 2)) - 66;
+//     uint8_t ot_offset = ((TEMP_TO_VOL(ot_thresh) / 5.0f) * 100) - 10;
+//     data_arr_[0] = (0b11100000 & (ut_offset << 5)) | (0b00011111 & ot_offset);
+//     SendCommandPacket(STACK_WRITE, data_arr_, 1, OTUT_THRESH, 0);
+//     delay(5);
+// }
 
 int32_t BQ_GetCurrent() {
     return BQ_Data.current;
