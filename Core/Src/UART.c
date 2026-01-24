@@ -2,8 +2,6 @@
 #include "stm32f3xx_hal.h"
 #include "UART.h"
 
-extern UART_HandleTypeDef huart2;
-
 typedef struct{
     UART_HandleTypeDef *huart;
 } UART_Data;
@@ -24,7 +22,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         return;
     }
 
-    HAL_UART_Transmit(&huart2, &pData, 1, HAL_MAX_DELAY);
+    // Use non-blocking transmit to avoid timing issues at high baud rates
+    extern UART_HandleTypeDef huart2;
+    HAL_UART_Transmit_IT(&huart2, &pData, 1);
 
     if (huart->Instance == uartData.huart->Instance)
     {

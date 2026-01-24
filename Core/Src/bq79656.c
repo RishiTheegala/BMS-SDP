@@ -118,9 +118,9 @@ void BQ_AutoAddressing() {
     SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
     DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
 
-    // data[0] = 0xFF;
-    // SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
-    // SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
+    data[0] = 0xFF;
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
 }
 
 void BQ_SetFaultState() {

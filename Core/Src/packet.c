@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "UART.h"
 #include "packet.h"
 #include "util.h"
@@ -67,8 +68,8 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
-//	HAL_UART_Transmit(&packetData.huart,(uint8_t*) &packet, length, 0xFFFF);
-    uint8_t send_packet[100];
+    // Static buffer persists across function calls for IT/DMA transmission
+    static uint8_t send_packet[100];
     send_packet[0] = ((uint8_t*)&packet)[0];
     if (cmd < 2) send_packet[1] = device;
     send_packet[cmd < 2 ? 2 : 1] = reg_msb;
@@ -79,8 +80,10 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     send_packet[(cmd < 2 ? 4 : 3) + length] = crc_msb;
     send_packet[(cmd < 2 ? 5 : 4) + length] = crc_lsb;
 
-    HAL_UART_Transmit(packetData.huart, (uint8_t*) &send_packet, (cmd < 2 ? 6 : 5) + length, 0xFFFF);
-    HAL_Delay(4);
+    HAL_UART_Transmit(packetData.huart, send_packet, (cmd < 2 ? 6 : 5) + length, HAL_MAX_DELAY);
+    
+    // Small inter-packet gap for receiver processing
+    HAL_Delay(1);
 }
 
 void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {

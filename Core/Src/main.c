@@ -103,7 +103,7 @@ int main(void)
   send_Wake(2100);
   UART_Init(&huart1);
   Packet_Init(&huart1);
-  BQ_AutoAddressing();
+  // BQ_AutoAddressing();
 
 
   /* USER CODE END 2 */
@@ -111,6 +111,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint8_t data[100];
+
+  data[0] = 0x05;
+  SendCommandPacket(BROAD_WRITE, data, 1, VMB_DONE_THRESH, 0);
+  data[0] = 0x00;
+  SendCommandPacket(BROAD_WRITE, data, 1, MB_TIMER_CTRL, 0);
+  data[0] = 0x06;
+  SendCommandPacket(BROAD_WRITE, data, 1, ADC_CTRL3, 0);
+  data[0] = 0x02;
+  SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
+
   while (1)
   {
     // data[0] = 0xBC;
@@ -121,8 +131,9 @@ int main(void)
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
     // HAL_UART_Transmit(&huart2, (uint8_t *)"Looping\r\n", 10, HAL_MAX_DELAY);
 
+
     // DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
-    ReadRegister(SINGLE_READ, 0, OTP_ECC_TEST, 1);
+    // ReadRegister(SINGLE_READ, 0, OTP_ECC_TEST, 1);
     // BQ_ReadVoltages();
     // int16_t vol = BQ_GetVoltage(0);
     // HAL_UART_Transmit(&huart2, (uint8_t *)&vol, 2, HAL_MAX_DELAY);
@@ -151,7 +162,11 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  /* Enable PLL to raise SYSCLK for accurate high-speed UART */
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  /* On STM32F3, use RCC_PLLSOURCE_HSI; HAL maps to HSI/2 where applicable */
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;      /* HSI (8 MHz) / 2 = 4 MHz */
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;             /* 4 MHz * 16 = 64 MHz */
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -161,17 +176,19 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  /* 72 MHz requires 2 wait states */
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
-  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;
+  /* Use SYSCLK (64 MHz) for USART1 to ensure accurate 1 Mbps timing */
+  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_SYSCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
