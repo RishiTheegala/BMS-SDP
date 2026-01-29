@@ -19,6 +19,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
+#include "main.h"
+#include "stm32f3xx_hal_can.h"
+#include "stm32f3xx_hal_def.h"
+#include "stm32f3xx_hal_flash_ex.h"
+#include <stdint.h>
 
 /* USER CODE BEGIN 0 */
 
@@ -113,5 +118,4 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
 /* USER CODE END 1 */
