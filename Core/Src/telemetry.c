@@ -15,6 +15,7 @@
 typedef struct {
 	uint16_t cellVoltages[NUM_CELLS];
 	uint16_t cellTemps[NUM_CELLS];
+	// data to be added
 } Telemetry_t;
 
 typedef struct {
