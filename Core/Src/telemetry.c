@@ -1,11 +1,9 @@
 #include <stdint.h>
 #include "can_agent.h"
+#include "telemetry.h"
 
 #define HEARTBEAT_ID 0xEB
-#define NUM_CELLS 20
-
-#define VOLTAGE_INDEX 0
-#define TEMP_INDEX 1
+#define NUM_CELLS 5
 
 // The idea behind this telemetry is that the byte 1 of the packet
 // ID corresponds to the type of data being requested and byte 0
@@ -23,7 +21,11 @@ typedef struct {
 	uint8_t data[8];
 } CANPacket_t;
 
-static Telemetry_t telem = {0};
+static Telemetry_t telem = {
+	{123, 234, 345, 456, 567},
+	{321, 432, 543, 654, 765}
+};
+//static Telemetry_t telem = {0};
 
 void Telemetry_SendHeartbeat(void){
 	CANPacket_t heartbeat = {

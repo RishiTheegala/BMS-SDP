@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "can_agent.h"
 #include "stm32f303x8.h"
 #include "stm32f3xx_hal.h"
 #include "stm32f3xx_hal_gpio.h"
@@ -26,6 +27,7 @@
 #include "gpio.h"
 
 #include "telemetry.h"
+#include <stdint.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -86,10 +88,13 @@ int main(void)
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+
 	MX_CAN_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 	/* USER CODE BEGIN 2 */
+	CAN_Start();
 	uint32_t last = HAL_GetTick();
 
 	/* USER CODE END 2 */
@@ -98,8 +103,24 @@ int main(void)
 	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		Telemetry_Respond();
-		if(HAL_GetTick() - last > 2000){
+//		uint8_t data[8];
+//		uint32_t id = 0x000;
+//		CAN_Transmit(&id, data);
+//		HAL_Delay(1000);
+//
+//		id = 0x001;
+//		CAN_Transmit(&id, data);
+//		HAL_Delay(1000);
+//
+//		id = 0x010;
+//		CAN_Transmit(&id, data);
+//		HAL_Delay(1000);
+//
+//		id = 0x011;
+//		CAN_Transmit(&id, data);
+//		HAL_Delay(1000);
+
+		if(HAL_GetTick() - last > 100){
 			last = HAL_GetTick();
 			Telemetry_SendHeartbeat();
 		}
