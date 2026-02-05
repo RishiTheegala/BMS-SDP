@@ -25,6 +25,7 @@
 #include "stm32f3xx_hal_gpio.h"
 #include "usart.h"
 #include "gpio.h"
+#include "iwdg.h"
 
 #include "telemetry.h"
 #include <stdint.h>
@@ -72,37 +73,36 @@ void SystemClock_Config(void);
  */
 int main(void)
 {
-
 	HAL_Init();
 
-	/* USER CODE BEGIN Init */
-
-	/* USER CODE END Init */
-
-	/* Configure the system clock */
 	SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
-
-	/* USER CODE END SysInit */
-
-	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_Delay(50);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_Delay(50);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_Delay(50);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_Delay(50);
 
 	MX_CAN_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
-	/* USER CODE BEGIN 2 */
+	MX_IWDG_Init();
+
 	CAN_Start();
 	uint32_t last = HAL_GetTick();
 
-	/* USER CODE END 2 */
-
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
+//		HAL_Delay(2100);  // Watchdog timeout set to a bit more than 2 seconds
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK)
+		{
+			Error_Handler();
+		}
 //		uint8_t data[8];
 //		uint32_t id = 0x000;
 //		CAN_Transmit(&id, data);
@@ -120,10 +120,10 @@ int main(void)
 //		CAN_Transmit(&id, data);
 //		HAL_Delay(1000);
 
-		if(HAL_GetTick() - last > 100){
-			last = HAL_GetTick();
-			Telemetry_SendHeartbeat();
-		}
+//		if(HAL_GetTick() - last > 100){
+//			last = HAL_GetTick();
+//			Telemetry_SendHeartbeat();
+//		}
 	}
 }
 
