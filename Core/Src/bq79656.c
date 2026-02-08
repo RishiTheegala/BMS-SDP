@@ -112,11 +112,16 @@ void BQ_AutoAddressing() {
 
     data[0] = 0x02;
     SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, 0);
-    data[0] = 0x00;  
+
+    // data[0] = 0x00;  
+    // SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
+    // data[0] = 0x03;
+    // SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
+    data[0] = 0x01;  
     SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
-    data[0] = 0x03;
-    SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
+
     DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
+    HAL_Delay(2);
 
     data[0] = 0xFF;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
@@ -132,10 +137,10 @@ void BQ_ReadVoltages() { // TODO: read all cells
     data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
-    ReadRegister(BROAD_READ, 0, VCELL16_HI, 2); // Read all cell voltages
+    ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
     // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
     //     for (uint8_t cell = 0; cell < 16; cell++) {
-            int16_t voltage = (rx_buffers[0][4] << 8) | rx_buffers[0][5];
+            int16_t voltage = (rx_buffers[0][0] << 8) | rx_buffers[0][1];
             BQ_Data.voltage[0] = voltage;
     //     }
     // }
@@ -153,6 +158,19 @@ void BQ_ReadCurrent() {
     curr = curr << 8;
     curr = curr >> 8;
     BQ_Data.current = curr;
+}
+
+void BQ_ModuleBalancing() {
+    uint8_t data[1];
+    data[0] = 0x01;
+    SendCommandPacket(BROAD_WRITE, data, 1, MB_TIMER_CTRL, 0);
+    data[0] = 0x00;
+    SendCommandPacket(BROAD_WRITE, data, 1, VMB_DONE_THRESH, 0);
+    data[0] = 0x06;
+    SendCommandPacket(BROAD_WRITE, data, 1, ADC_CTRL3, 0);
+    HAL_Delay(5);
+    data[0] = 0x02;
+    SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
 void BQ_HandleBalancing() {

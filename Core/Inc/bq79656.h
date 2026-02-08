@@ -330,4 +330,5 @@ int32_t BQ_GetCurrent();
 int16_t BQ_GetVoltage(int cell);
 
 void BQ_AutoAddressing();
+void BQ_ReadVoltages();
 #endif

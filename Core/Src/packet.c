@@ -38,8 +38,8 @@ uint8_t rx_buffer[256];
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
     CMD_PACKET_INIT packet = {0};
 
-    packet.type = 1; // Command
-    packet.command = cmd; // No-op command
+    packet.type = 1;
+    packet.command = cmd; // op code
     packet.length = length - 1;
 
     uint8_t reg_lsb = reg & 0xFF;
@@ -68,7 +68,6 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
-    // Static buffer persists across function calls for IT/DMA transmission
     static uint8_t send_packet[100];
     send_packet[0] = ((uint8_t*)&packet)[0];
     if (cmd < 2) send_packet[1] = device;
@@ -82,8 +81,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
 
     HAL_UART_Transmit(packetData.huart, send_packet, (cmd < 2 ? 6 : 5) + length, HAL_MAX_DELAY);
     
-    // Small inter-packet gap for receiver processing
-    HAL_Delay(1);
+    HAL_Delay(4);
 }
 
 void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
@@ -104,15 +102,20 @@ void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
         if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
     }
 
+    HAL_Delay(4);
+
     for (int i = 0; i < numDevices; i++) {
         GetPacket();
-        if (check_crc(rx_buffer, length)) {
-            printf("CRC Error on device %d\n", rx_buffer[1]);
-        } else {
-            for (int j = 0; j < length + 4; j++) {
-                rx_buffers[i][j] = rx_buffer[j];
-            }
+        for (int j = 0; j < length; j++) {
+            rx_buffers[i][j] = rx_buffer[j + 4];
         }
+        // if (check_crc(rx_buffer, length)) {
+        //     rx_buffers[i][0] = -1;
+        // } else {
+        //     for (int j = 0; j < length + 4; j++) {
+        //         rx_buffers[i][j] = rx_buffer[j];
+        //     }
+        // }
     }
 }
 
@@ -120,7 +123,7 @@ void GetPacket() {
     int size = UART_GetByte() + 1;
     if (size) {
         rx_buffer[0] = size;
-        for (int i = 1; i < size + 4; i++) {
+        for (int i = 1; i < size + 6; i++) {
             rx_buffer[i] = UART_GetByte();
         }
     }

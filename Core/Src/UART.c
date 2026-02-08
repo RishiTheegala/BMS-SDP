@@ -22,10 +22,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         return;
     }
 
-    // Use non-blocking transmit to avoid timing issues at high baud rates
-    extern UART_HandleTypeDef huart2;
-    HAL_UART_Transmit_IT(&huart2, &pData, 1);
-
     if (huart->Instance == uartData.huart->Instance)
     {
         // Process received data in rx_buffer
@@ -33,6 +29,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
         if (tx_index >= sizeof(rx_buffer) / sizeof(rx_buffer[0])) tx_index = 0; // Prevent overflow
 
+        rx_buffer[tx_index] = 0; // Null-terminate for safety
         // Re-enable reception for the next data
         HAL_UART_Receive_IT(uartData.huart, &pData, 1);
     }
