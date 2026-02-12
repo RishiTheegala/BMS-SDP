@@ -1,8 +1,12 @@
 #include "bq79656.h"
 #include "packet.h"
+#include "stm32f303x8.h"
+#include "stm32f3xx_hal_cortex.h"
 #include "util.h"
 #include "gpio.h"
 #include "stm32f3xx_hal.h"
+
+#define ADC_RESOLUTION 190.73E-6F
 
 typedef enum {
     STATE_INIT,
@@ -13,8 +17,8 @@ typedef enum {
 
 typedef struct {
     int32_t current;
-    int16_t voltage[TOTAL_CELLS];
-    int32_t temp[TOTAL_THERMISTORS];
+    float voltage[TOTAL_CELLS];
+    float temp[TOTAL_THERMISTORS];
     int fault_status;
     int fault_sum;
     int fault_dev_id;
@@ -169,13 +173,15 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
-    for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
-        for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
-            ReadRegister(SINGLE_READ, device, VCELL16_HI + cell * 2, 2);
-            int16_t voltage = (rx_buffers[device][0] << 8) | rx_buffers[device][1];
-            BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = voltage * BQ_V_LSB_ADC;  // convert to volts
-        }
-    }
+	HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
+    ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
+    // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
+    //     for (uint8_t cell = 0; cell < 16; cell++) {
+            int16_t rawRead = (rx_buffers[0][0] << 8) | rx_buffers[0][1];
+            BQ_Data.voltage[0] = rawRead * ADC_RESOLUTION;
+    //     }
+    // }
+	HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
     data[0] = 0b00000000;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
@@ -361,6 +367,6 @@ int32_t BQ_GetCurrent() {
     return BQ_Data.current;
 }
 
-int16_t BQ_GetVoltage(int cell) {
+float BQ_GetVoltage(int cell) {
     return BQ_Data.voltage[cell];
 }
