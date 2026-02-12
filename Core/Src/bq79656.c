@@ -4,6 +4,8 @@
 #include "gpio.h"
 #include "stm32f3xx_hal.h"
 
+#define ADC_RESOLUTION 190.73E-6F
+
 typedef enum {
     STATE_INIT,
     STATE_ACTIVE,
@@ -12,8 +14,8 @@ typedef enum {
 
 typedef struct {
     int32_t current;
-    int16_t voltage[TOTAL_CELLS];
-    int32_t temp[TOTAL_THERMISTORS];
+    float voltage[TOTAL_CELLS];
+    float temp[TOTAL_THERMISTORS];
     int fault_status;
     int fault_sum;
     int fault_dev_id;
@@ -140,8 +142,8 @@ void BQ_ReadVoltages() { // TODO: read all cells
     ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
     // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
     //     for (uint8_t cell = 0; cell < 16; cell++) {
-            int16_t voltage = (rx_buffers[0][0] << 8) | rx_buffers[0][1];
-            BQ_Data.voltage[0] = voltage;
+            int16_t rawRead = (rx_buffers[0][0] << 8) | rx_buffers[0][1];
+            BQ_Data.voltage[0] = rawRead * ADC_RESOLUTION;
     //     }
     // }
 
@@ -258,6 +260,6 @@ int32_t BQ_GetCurrent() {
     return BQ_Data.current;
 }
 
-int16_t BQ_GetVoltage(int cell) {
+float BQ_GetVoltage(int cell) {
     return BQ_Data.voltage[cell];
 }
