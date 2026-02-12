@@ -102,7 +102,7 @@ int main(void)
   send_Wake(2400);  
   UART_Init(&huart1);
   Packet_Init(&huart1);
-  BQ_AutoAddressing();
+  BQ_Init();
 
 
   /* USER CODE END 2 */
@@ -119,11 +119,12 @@ int main(void)
     // data[3] = 0x02;
     // SendCommandPacket(BROAD_WRITE, data, 4, OTP_PROG_UNLOCK1A, 0);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+    // BQ_ReadVoltages();
+    // int16_t vol = BQ_GetVoltage(0);
+    // HAL_UART_Transmit(&huart2, (uint8_t*)&vol, 2, HAL_MAX_DELAY);
+    ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
+    HAL_UART_Transmit(&huart2, rx_buffers[0], 1, HAL_MAX_DELAY);
     // DummyReadResponse(SINGLE_READ, 0, OTP_ECC_TEST, 1);
-    // ReadRegister(BROAD_READ, 0, BAL_STAT, 1);
-    BQ_ReadVoltages();
-    int16_t vol = BQ_GetVoltage(0);
-    HAL_UART_Transmit(&huart2, (uint8_t *)&vol, 2, HAL_MAX_DELAY);
 
 	  HAL_Delay(1000);
     /* USER CODE END WHILE */
