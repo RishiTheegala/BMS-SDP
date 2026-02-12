@@ -1,5 +1,7 @@
 #include "bq79656.h"
 #include "packet.h"
+#include "stm32f303x8.h"
+#include "stm32f3xx_hal_cortex.h"
 #include "util.h"
 #include "gpio.h"
 #include "stm32f3xx_hal.h"
@@ -139,6 +141,7 @@ void BQ_ReadVoltages() { // TODO: read all cells
     data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
+	HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
     ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
     // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
     //     for (uint8_t cell = 0; cell < 16; cell++) {
@@ -146,6 +149,7 @@ void BQ_ReadVoltages() { // TODO: read all cells
             BQ_Data.voltage[0] = rawRead * ADC_RESOLUTION;
     //     }
     // }
+	HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
     data[0] = 0b00000000;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
