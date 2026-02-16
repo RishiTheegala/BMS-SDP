@@ -173,6 +173,14 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
+    // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
+    //     for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
+    //         ReadRegister(SINGLE_READ, device, VCELL16_HI + cell * 2, 2);
+    //         int16_t voltage = (rx_buffers[device][0] << 8) | rx_buffers[device][1];
+    //         BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = voltage * ADC_RESOLUTION;  // convert to volts
+    //     }
+    // }
+
 	HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
     ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
     // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
@@ -185,6 +193,25 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
 
     data[0] = 0b00000000;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+}
+
+void BQ_ReadTemps()
+{
+    // read temps from battery
+    ReadRegister(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
+
+    // fill in kNumThermistors temperatures to array
+    for (int i = 0; i < NUM_BQ_DEVICES; i++)
+    {
+        for (int j = 0; j < THERMISTORS_PER_DEVICE; j++)
+        {
+            int16_t temp;
+            ((uint8_t *)&temp)[0] = rx_buffers[NUM_BQ_DEVICES - i - 1][2 * j];
+            ((uint8_t *)&temp)[1] = rx_buffers[NUM_BQ_DEVICES - i - 1][(2 * j) + 1];
+            // BQ_Data.temp[(i * THERMISTORS_PER_DEVICE) + j] = thermistor_.VoltageToTemperature(temp * BQ_V_LSB_GPIO);
+        }
+    }
+    return;
 }
 
 void BQ_ReadCurrent() {
@@ -220,12 +247,12 @@ void BQ_HandleBalancing() {
         data[i] = 0x4;
     }
 
-    SendCommandPacket(STACK_WRITE,
+    SendCommandPacket(BROAD_WRITE,
         data,
         CELLS_PER_DEVICE / 2,
         CB_CELL1_CTRL + 1 - CELLS_PER_DEVICE,
         0);  // can only do up to 8 in one command
-    SendCommandPacket(STACK_WRITE,
+    SendCommandPacket(BROAD_WRITE,
         data,
         CELLS_PER_DEVICE / 2,
         CB_CELL1_CTRL + (CELLS_PER_DEVICE / 2) + 1 - CELLS_PER_DEVICE,
@@ -233,16 +260,16 @@ void BQ_HandleBalancing() {
 
     // set balancing end voltage to 4V (max)
     data[0] = 0x3F;
-    SendCommandPacket(STACK_WRITE, data, 1, VCB_DONE_THRESH, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, VCB_DONE_THRESH, 0);
 
     data[0] = 0b00000101;  // OVUV_GO, OVUV_MODE round robin
-    SendCommandPacket(STACK_WRITE, data, 1, OVUV_CTRL, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, OVUV_CTRL, 0);
 
 
     // start balancing with FLTSTOP_EN to stop on fault, OTCB_EN to pause on overtemp, AUTO_BAL to automatically cycle
     // between even/odd
     data[0] = 0b00110011;
-    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
 void BQ_StopBalancing() {
@@ -252,26 +279,26 @@ void BQ_StopBalancing() {
         data[i] = 0x4;
     }
 
-    SendCommandPacket(STACK_WRITE,
+    SendCommandPacket(BROAD_WRITE,
         data,
         CELLS_PER_DEVICE / 2,
         CB_CELL1_CTRL + 1 - CELLS_PER_DEVICE,
         0);  // can only do up to 8 in one command
-    SendCommandPacket(STACK_WRITE,
+    SendCommandPacket(BROAD_WRITE,
         data,
         CELLS_PER_DEVICE / 2,
         CB_CELL1_CTRL + (CELLS_PER_DEVICE / 2) + 1 - CELLS_PER_DEVICE,
         0);
 
     data[0] = 0b00110011;  // write BAL_GO to process registers
-    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 
     // clear OV faults
     data[0] = 0b00001000;
-    SendCommandPacket(STACK_WRITE, data, 1, FAULT_RST1, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
     // reset fault mask 1 to re-enable OV faults
     data[0] = 0b00000000;
-    SendCommandPacket(STACK_WRITE, data, 1, FAULT_MSK1, 0);
+    SendCommandPacket(BROAD_WRITE, data, 1, FAULT_MSK1, 0);
 
 }
 
