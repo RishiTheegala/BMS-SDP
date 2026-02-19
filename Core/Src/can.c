@@ -19,16 +19,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
-#include "bq79656.h"
+#include "main.h"
+#include "stm32f3xx_hal_can.h"
+#include "stm32f3xx_hal_def.h"
+#include "stm32f3xx_hal_flash_ex.h"
+#include "stm32f3xx_hal_gpio.h"
+#include <stdint.h>
 
 /* USER CODE BEGIN 0 */
-
-typedef struct
-{
-    uint8_t fault;
-} CAN_Message;
-
-CAN_Message can_message;
 
 /* USER CODE END 0 */
 
@@ -39,17 +37,17 @@ void MX_CAN_Init(void)
 {
 
   /* USER CODE BEGIN CAN_Init 0 */
-
+  CAN_FilterTypeDef sFilterConfig;
   /* USER CODE END CAN_Init 0 */
 
   /* USER CODE BEGIN CAN_Init 1 */
 
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN;
-  hcan.Init.Prescaler = 16;
-  hcan.Init.Mode = CAN_MODE_NORMAL;
+  hcan.Init.Prescaler = 1;
+  hcan.Init.Mode = CAN_MODE_LOOPBACK;
   hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_1TQ;
+  hcan.Init.TimeSeg1 = CAN_BS1_6TQ;
   hcan.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan.Init.TimeTriggeredMode = DISABLE;
   hcan.Init.AutoBusOff = DISABLE;
@@ -62,7 +60,29 @@ void MX_CAN_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN_Init 2 */
-
+  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterIdHigh = 0x0000;
+  sFilterConfig.FilterIdLow = 0x0000;
+  sFilterConfig.FilterMaskIdHigh = 0x0000;
+  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0; /* The data will be received in FIFO0 */
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+  if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig) != HAL_OK)
+  {
+  	/* Filter configuration Error */
+  	Error_Handler();
+  }
+  if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+  {
+  	/* Notification Error */
+  	Error_Handler();
+  }
+  if(HAL_CAN_Start(&hcan) != HAL_OK){
+  	Error_Handler();
+  }
   /* USER CODE END CAN_Init 2 */
 
 }
@@ -92,7 +112,8 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN CAN_MspInit 1 */
-
+    HAL_NVIC_SetPriority(CAN_RX0_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
   /* USER CODE END CAN_MspInit 1 */
   }
 }
@@ -115,14 +136,10 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
 
   /* USER CODE BEGIN CAN_MspDeInit 1 */
-
+    HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
   /* USER CODE END CAN_MspDeInit 1 */
   }
 }
 
 /* USER CODE BEGIN 1 */
-void CAN_Main(void)
-{
-    
-}
 /* USER CODE END 1 */
