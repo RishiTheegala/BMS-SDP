@@ -22,10 +22,15 @@
 #include "stm32f303x8.h"
 #include "stm32f3xx_hal.h"
 #include "stm32f3xx_hal_gpio.h"
+#include "can_agent.h"
 #include "usart.h"
 #include "gpio.h"
 #include "bq79656.h"
 #include "timer.h"
+#include "iwdg.h"
+
+#include "telemetry.h"
+#include <stdint.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

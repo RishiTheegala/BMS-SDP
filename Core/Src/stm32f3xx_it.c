@@ -19,6 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f3xx_hal_can.h"
 #include "stm32f3xx_it.h"
 #include "usart.h"
 /* Private includes ----------------------------------------------------------*/
@@ -58,7 +59,7 @@
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
-
+extern CAN_HandleTypeDef hcan;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -215,6 +216,19 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&huart2);
+}
+/**
+  * @brief This function handles CAN RX0 interrupt.
+  */
+void CAN_RX0_IRQHandler(void)
+{
+  /* USER CODE BEGIN CAN_RX0_IRQn 0 */
+
+  /* USER CODE END CAN_RX0_IRQn 0 */
+  HAL_CAN_IRQHandler(&hcan);
+  /* USER CODE BEGIN CAN_RX0_IRQn 1 */
+
+  /* USER CODE END CAN_RX0_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
