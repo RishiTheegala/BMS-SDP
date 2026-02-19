@@ -1,41 +1,51 @@
+#include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "UART.h"
 #include "packet.h"
 #include "util.h"
+#include "stm32f3xx_hal.h"
+
+// Define the rx_buffers array here (declared as extern in packet.h)
+uint8_t rx_buffers[NUM_DEVICES][256];
 
 #define CHECK_POLY 0xC001
 
-typedef struct __attribute__((packed)) {
-    uint64_t type : 1;        // 1 bit for type (1 = command), equal 1
-    uint64_t command : 3;
-    uint64_t rvsd : 1;          // Reserved bit
+typedef struct {
     uint64_t length : 3;
-} CMD_PACKET_INIT;
+    uint64_t rvsd : 1;          // Reserved bit
+    uint64_t command : 3;
+    uint64_t type : 1;        // 1 bit for type (1 = command), equal 1
 
-typedef struct __attribute__((packed)) {
-    // device
-    uint64_t rvsd : 2;          // Reserved bits, equal 0
-    uint64_t devID : 6;
-} DEVICE;
-static uint16_t calculate_crc(uint8_t* data, int length);
+} __attribute__((packed)) CMD_PACKET_INIT;
 
-static CMD_PACKET_INIT packet = {0};
-static DEVICE dev = {0};
+typedef struct{
+	UART_HandleTypeDef *huart;
+} Packet_Data;
+
+static Packet_Data packetData;
+
+void GetPacket();
+uint16_t calculate_crc(uint8_t* data, int length);
+int check_crc(uint8_t* response, int length);
+
+void Packet_Init(UART_HandleTypeDef *huart) {
+	packetData.huart = huart;
+}
+
+uint8_t rx_buffer[256];
 
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
-    packet.type = 1; // Command
-    packet.command = cmd; // No-op command
-    packet.length = length;
+    CMD_PACKET_INIT packet = {0};
 
-    dev.devID = device;
-    dev.rvsd = 0;
+    packet.type = 1;
+    packet.command = cmd; // op code
+    packet.length = length - 1;
 
     uint8_t reg_lsb = reg & 0xFF;
     uint8_t reg_msb = (reg >> 8) & 0xFF;
 
-    uint8_t* full_packet;
-
-    if (device != NULL) full_packet = (uint8_t*)malloc(length + 6);
-    else full_packet = (uint8_t*)malloc(length + 5);
+    uint8_t full_packet[100];
 
     full_packet[0] = 0;
     full_packet[1] = 0;
@@ -46,8 +56,8 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
     full_packet[length + 3] = ReverseByteBits(*((uint8_t*)&reg_msb));
 
     uint16_t crc;
-    if (device != NULL) {
-        full_packet[length + 4] = ReverseByteBits(*((uint8_t*)&dev));
+    if (cmd < 2) {
+        full_packet[length + 4] = ReverseByteBits(device);
         full_packet[length + 5] = ReverseByteBits(*((uint8_t*)&packet));
         crc = calculate_crc(full_packet, length + 6);
     } else {
@@ -55,39 +65,83 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
         crc = calculate_crc(full_packet, length + 5);
     }
 
-    free(full_packet);
-
     uint8_t crc_lsb = crc & 0xFF;
     uint8_t crc_msb = (crc >> 8) & 0xFF;
 
-    //UART_Transmit((uint8_t*)&packet);
-    //if (device != NULL) UART_Transmit((uint8_t*)&dev);
-    //UART_Transmit(&reg_lsb);
-    //UART_Transmit(&reg_msb);
-//    for (int i = 0; i < length - 5; i++) {
-//        UART_Transmit(&data[i]);
-//    }
-//    UART_Transmit(&crc_lsb);
-//    UART_Transmit(&crc_msb);
+    static uint8_t send_packet[100];
+    send_packet[0] = ((uint8_t*)&packet)[0];
+    if (cmd < 2) send_packet[1] = device;
+    send_packet[cmd < 2 ? 2 : 1] = reg_msb;
+    send_packet[cmd < 2 ? 3 : 2] = reg_lsb;
+    for (int i = length - 1; i >= 0; i--) {
+        send_packet[(cmd < 2 ? 4 : 3) + (length - 1 - i)] = data[i];
+    }
+    send_packet[(cmd < 2 ? 4 : 3) + length] = crc_msb;
+    send_packet[(cmd < 2 ? 5 : 4) + length] = crc_lsb;
+
+    HAL_UART_Transmit(packetData.huart, send_packet, (cmd < 2 ? 6 : 5) + length, HAL_MAX_DELAY);
+    
+    HAL_Delay(4);
 }
 
-uint8_t* ReadResponse() {
-//    uint8_t* response = UART_GetRxData();
-//    int length = response[0];
-//    uint8_t* check = (uint8_t*)malloc(3 + length);
-//    check[0] = 0;
-//    check[1] = 0;
-//    memcpy(check + 2, response, 1 + length);
-//    uint16_t crc = calculate_crc(check, 3 + length);
-//    free(check);
-//    uint16_t received_crc = (response[length + 2] << 8) | response[length + 3];
-//    if (crc != received_crc) {
-//        return NULL;
-//    }
-//    return response;
+void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
+    uint8_t data[1];
+    data[0] = length - 1;
+    SendCommandPacket(cmd, data, 1, reg, device);
+    UART_ClearRX();
 }
 
-static uint16_t calculate_crc(uint8_t* data, int length) {
+void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
+    uint8_t data[1];
+    data[0] = length - 1;
+    SendCommandPacket(cmd, data, 1, reg, device);
+
+    int numDevices = 1;
+    if (cmd > 1) {
+        numDevices = NUM_DEVICES;
+        if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
+    }
+
+    HAL_Delay(4);
+
+    for (int i = 0; i < numDevices; i++) {
+        GetPacket();
+        for (int j = 0; j < length; j++) {
+            rx_buffers[i][j] = rx_buffer[j + 4];
+        }
+        // if (check_crc(rx_buffer, length)) {
+        //     rx_buffers[i][0] = -1;
+        // } else {
+        //     for (int j = 0; j < length + 4; j++) {
+        //         rx_buffers[i][j] = rx_buffer[j];
+        //     }
+        // }
+    }
+}
+
+void GetPacket() {
+    int size = UART_GetByte() + 1;
+    if (size) {
+        rx_buffer[0] = size;
+        for (int i = 1; i < size + 6; i++) {
+            rx_buffer[i] = UART_GetByte();
+        }
+    }
+}
+
+int check_crc(uint8_t* response, int length) {
+    uint8_t check[100];
+    check[0] = 0;
+    check[1] = 0;
+    for (int i = 0; i < length + 4; i++) {
+        check[i + 2] = ReverseByteBits(response[length + 3 - i]);
+    }
+    uint16_t crc = calculate_crc(check, 6 + length);
+    uint16_t received_crc = (response[length + 2] << 8) | response[length + 3];
+    return crc != received_crc;
+}
+
+uint16_t calculate_crc(uint8_t* data, int length) {
     uint32_t polynomial = 0b11000000000000101;  // Polynomial from document
     
     int bit = length * 8;
