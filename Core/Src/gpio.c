@@ -20,9 +20,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#include "timer.h"
 
 /* USER CODE BEGIN 0 */
-
+#define UART_TX_PIN     GPIO_PIN_9
+#define UART_TX_PORT    GPIOA 
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -62,5 +64,32 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+
+void send_Wake(int us_delay) {
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    GPIO_InitStruct.Pin = UART_TX_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+    HAL_GPIO_Init(UART_TX_PORT, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(UART_TX_PORT, UART_TX_PIN, GPIO_PIN_RESET);
+    delay_us(us_delay);
+    HAL_GPIO_WritePin(UART_TX_PORT, UART_TX_PIN, GPIO_PIN_SET);
+
+    GPIO_InitStruct.Pin = UART_TX_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* Enable NVIC for USART1 interrupts */
+    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
+
+    HAL_Delay(10);
+}
 
 /* USER CODE END 2 */

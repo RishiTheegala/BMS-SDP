@@ -33,6 +33,11 @@ set(MX_Application_Src
 
 # STM32 HAL/LL Drivers
 set(STM32_Drivers_Src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../startup_stm32f303x8.s
+)
+
+# STM32 HAL/LL Drivers
+set(STM32_Drivers_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/system_stm32f3xx.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_can.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c
@@ -48,9 +53,11 @@ set(STM32_Drivers_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c_ex.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_exti.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_iwdg.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart_ex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim_ex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_iwdg.c
 )
 
 # Drivers Midllewares

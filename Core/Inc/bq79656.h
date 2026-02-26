@@ -1,5 +1,6 @@
+#ifndef PACKET_B
+#define PACKET_B
 #include <stdint.h>
-
 
 typedef enum RequestType {
     SINGLE_READ = 0b000,     // single device read
@@ -321,3 +322,11 @@ typedef enum Register {
     CURRENT_MID = 0x5D7,
     CURRENT_LO = 0x5D8
 } Register;
+
+void BQ_Main();
+void BQ_Init();
+int32_t BQ_GetCurrent();
+float BQ_GetVoltage(int cell);
+
+void BQ_ReadVoltages();
+#endif
