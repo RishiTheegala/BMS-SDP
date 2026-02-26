@@ -173,13 +173,15 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
+    // HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
     // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
+    //     ReadRegister(SINGLE_READ, device, VCELL16_HI, CELLS_PER_DEVICE * 2);
     //     for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
-    //         ReadRegister(SINGLE_READ, device, VCELL16_HI + cell * 2, 2);
-    //         int16_t voltage = (rx_buffers[device][0] << 8) | rx_buffers[device][1];
+    //         int16_t voltage = (rx_buffers[0][cell * 2] << 8) | rx_buffers[0][(cell * 2) + 1];
     //         BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = voltage * ADC_RESOLUTION;  // convert to volts
     //     }
     // }
+    // HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
 	HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
     ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
@@ -197,17 +199,15 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
 
 void BQ_ReadTemps()
 {
-    // read temps from battery
-    ReadRegister(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
-
     // fill in kNumThermistors temperatures to array
     for (int i = 0; i < NUM_BQ_DEVICES; i++)
     {
+        ReadRegister(SINGLE_READ, i, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
         for (int j = 0; j < THERMISTORS_PER_DEVICE; j++)
         {
             int16_t temp;
-            ((uint8_t *)&temp)[0] = rx_buffers[NUM_BQ_DEVICES - i - 1][2 * j];
-            ((uint8_t *)&temp)[1] = rx_buffers[NUM_BQ_DEVICES - i - 1][(2 * j) + 1];
+            ((uint8_t *)&temp)[0] = rx_buffers[0][2 * j];
+            ((uint8_t *)&temp)[1] = rx_buffers[0][(2 * j) + 1];
             // BQ_Data.temp[(i * THERMISTORS_PER_DEVICE) + j] = thermistor_.VoltageToTemperature(temp * BQ_V_LSB_GPIO);
         }
     }

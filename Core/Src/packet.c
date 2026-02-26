@@ -81,7 +81,7 @@ void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uin
 
     HAL_UART_Transmit(packetData.huart, send_packet, (cmd < 2 ? 6 : 5) + length, HAL_MAX_DELAY);
     
-    HAL_Delay(4);
+    HAL_Delay(2);
 }
 
 void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
