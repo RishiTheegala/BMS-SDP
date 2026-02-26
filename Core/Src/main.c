@@ -22,48 +22,22 @@
 #include "stm32f303x8.h"
 #include "stm32f3xx_hal.h"
 #include "stm32f3xx_hal_gpio.h"
+#include "stm32f3xx_hal_uart.h"
 #include "usart.h"
 #include "gpio.h"
 #include "bq79656.h"
 #include "timer.h"
+#include "iwdg.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+#include "can_agent.h"
 #include "packet.h"
+#include "telemetry.h"
 #include "UART.h"
-/* USER CODE END Includes */
+#include <stdint.h>
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
 extern UART_HandleTypeDef huart1;
-/* USER CODE END PM */
 
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -71,67 +45,80 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
+	HAL_Init();
 
-  /* USER CODE BEGIN 1 */
+	SystemClock_Config();
 
-  /* USER CODE END 1 */
+	MX_GPIO_Init();
+	MX_CAN_Init();
+	MX_USART1_UART_Init();
+	MX_USART2_UART_Init();
+	MX_TIM6_Init();
+	MX_IWDG_Init();
 
-  /* MCU Configuration--------------------------------------------------------*/
+	// Blink the LED
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	HAL_Delay(50);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	HAL_Delay(50);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	HAL_Delay(50);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+	HAL_Delay(50);
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	send_Wake(2400);  
+	UART_Init(&huart1);
+	Packet_Init(&huart1);
+//	BQ_Init();
+	CAN_Start();
 
-  /* USER CODE BEGIN Init */
+	uint32_t lastBQRead = HAL_GetTick();
+	uint32_t lastHeartbeat = HAL_GetTick();
 
-  /* USER CODE END Init */
+	while (1)
+	{
+//		if(HAL_GetTick() - lastHeartbeat > BQ_SAMPLING_PERIOD_MS) {
+//			lastHeartbeat = HAL_GetTick();
+//			Telemetry_SendHeartbeat();
+//		}
 
-  /* Configure the system clock */
-  SystemClock_Config();
+		if(HAL_GetTick() - lastBQRead > BQ_SAMPLING_PERIOD_MS){
+			lastBQRead = HAL_GetTick();
 
-  /* USER CODE BEGIN SysInit */
+			BQ_ReadVoltages();
 
-  /* USER CODE END SysInit */
+			uint16_t rawReading= BQ_GetVoltage(0);
+			uint8_t voltage[2] = { 
+				rawReading& 0xFF,
+				rawReading>> 8
+			};
+			//int16_t voltage = (uint16_t)(BQ_GetVoltage(0) * 1000);
+			HAL_UART_Transmit(&huart2, voltage, 2, HAL_MAX_DELAY);
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_CAN_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  MX_TIM6_Init();
-  /* USER CODE BEGIN 2 */
-  send_Wake(2400);  
-  UART_Init(&huart1);
-  Packet_Init(&huart1);
-  BQ_Init();
+			if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {
+				Error_Handler(); // Pet the watchdog
+			}
+		}
 
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  uint8_t data[100];
-
-  while (1)
-  {
-    // data[0] = 0xBC;
-    // data[1] = 0x78;
-    // data[2] = 0xB7;
-    // data[3] = 0x02;
-    // SendCommandPacket(BROAD_WRITE, data, 4, OTP_PROG_UNLOCK1A, 0);
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-    BQ_ReadVoltages();
-    int16_t vol = BQ_GetVoltage(0);
-    HAL_UART_Transmit(&huart2, (uint8_t*)&vol, 2, HAL_MAX_DELAY);
-    // ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
-    // HAL_UART_Transmit(&huart2, rx_buffers[0], 1, HAL_MAX_DELAY);
-    // DummyReadResponse(SINGLE_READ, 0, OTP_ECC_TEST, 1);
-
-	  HAL_Delay(1000);
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+//		// data[0] = 0xBC;
+//		// data[1] = 0x78;
+//		// data[2] = 0xB7;
+//		// data[3] = 0x02;
+//		// SendCommandPacket(BROAD_WRITE, data, 4, OTP_PROG_UNLOCK1A, 0);
+//		//    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+//		//    BQ_ReadVoltages();
+//		//    int16_t vol = BQ_GetVoltage(0);
+//		//    HAL_UART_Transmit(&huart2, (uint8_t*)&vol, 2, HAL_MAX_DELAY);
+//		// ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
+//		// HAL_UART_Transmit(&huart2, rx_buffers[0], 1, HAL_MAX_DELAY);
+//		// DummyReadResponse(SINGLE_READ, 0, OTP_ECC_TEST, 1);
+//
+//		HAL_Delay(1000);
+//		/* USER CODE END WHILE */
+//
+//		/* USER CODE BEGIN 3 */
+	}
+	/* USER CODE END 3 */
 }
 
 /**

@@ -4,30 +4,18 @@
 #include "stm32f3xx_hal_cortex.h"
 #include "util.h"
 #include "gpio.h"
+#include <math.h>
 #include "stm32f3xx_hal.h"
 
 #define ADC_RESOLUTION 190.73E-6F
 
-typedef enum {
-    STATE_INIT,
-    STATE_ACTIVE,
-    STATE_FAULT,
-    STATE_SLEEP
-} system_state_t;
+#define GPIO_RESOLUTION 152.59E-6F
+#define THERMISTOR_PULLUP 10E4
+#define THERMISTOR_BETA 4000.0F
+#define ROOM_TEMP 298.15F
+#define THERMISTOR_ROOM_TEMP 10000.0F
 
-typedef struct {
-    int32_t current;
-    float voltage[TOTAL_CELLS];
-    float temp[TOTAL_THERMISTORS];
-    int fault_status;
-    int fault_sum;
-    int fault_dev_id;
-} bq_data_t;
-
-static bq_data_t BQ_Data;
-
-const static int NUM_BQ_DEVICES = NUM_DEVICES;
-static system_state_t current_state = STATE_INIT;
+static System_State_t current_state = STATE_INIT;
 
 void BQ_AutoAddressing();
 void BQ_ReadVoltages();
@@ -210,10 +198,11 @@ void BQ_ReadTemps()
         for (int j = 0; j < THERMISTORS_PER_DEVICE; j++)
         {
             int16_t temp = (rx_buffers[NUM_BQ_DEVICES - i - 1][(2 * j) + 1] << 8) | rx_buffers[NUM_BQ_DEVICES - i - 1][2 * j];
-            BQ_Data.temp[(i * THERMISTORS_PER_DEVICE) + j] = temp;
+			float thermistorVoltage = temp * GPIO_RESOLUTION;
+            BQ_Data.temp[(i * THERMISTORS_PER_DEVICE) + j] = (THERMISTOR_BETA * ROOM_TEMP) / 
+				(THERMISTOR_BETA + (ROOM_TEMP * logf(thermistorVoltage / THERMISTOR_ROOM_TEMP)));
         }
     }
-    return;
 }
 
 void BQ_ReadCurrent() {

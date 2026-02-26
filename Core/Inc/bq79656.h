@@ -2,6 +2,25 @@
 #define PACKET_B
 #include <stdint.h>
 
+#include "util.h"
+
+typedef enum {
+    STATE_INIT,
+    STATE_ACTIVE,
+    STATE_FAULT,
+    STATE_SLEEP
+} System_State_t;
+
+typedef struct {
+    int32_t current;
+    float voltage[TOTAL_CELLS];
+    float temp[TOTAL_THERMISTORS];
+    int fault_status;
+    int fault_sum;
+    int fault_dev_id;
+} BQ_Data_t;
+
+volatile static BQ_Data_t BQ_Data;
 typedef enum RequestType {
     SINGLE_READ = 0b000,     // single device read
     SINGLE_WRITE = 0b001,    // single device write

@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include "bq79656.h"
+#include "util.h"
 #include "can_agent.h"
 #include "telemetry.h"
 
@@ -11,21 +13,9 @@
 // to a customizable prefix.
 
 typedef struct {
-	uint16_t cellVoltages[NUM_CELLS];
-	uint16_t cellTemps[NUM_CELLS];
-	// data to be added
-} Telemetry_t;
-
-typedef struct {
 	uint32_t id;
 	uint8_t data[8];
 } CANPacket_t;
-
-static Telemetry_t telem = {
-	{123, 234, 345, 456, 567},
-	{321, 432, 543, 654, 765}
-};
-//static Telemetry_t telem = {0};
 
 void Telemetry_SendHeartbeat(void){
 	CANPacket_t heartbeat = {
@@ -46,15 +36,18 @@ void Telemetry_Respond(void){
 
 	uint8_t tx_buf[8] = {0};
 	uint16_t response_value = 0;
+
 	switch(dataType){
 		case VOLTAGE_INDEX:
 		{
-			response_value = telem.cellVoltages[index];
+			if(index >= NUM_CELLS) return;
+			response_value = BQ_Data.voltage[index];
 			break;
 		}
 		case TEMP_INDEX:
 		{
-			response_value = telem.cellVoltages[index];
+			if(index >= THERMISTORS_PER_DEVICE * NUM_BQ_DEVICES) return;
+			response_value = BQ_Data.temp[index];
 			break;
 		}
 	}

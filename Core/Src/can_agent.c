@@ -39,7 +39,6 @@ bool CAN_Receive(uint32_t *id, uint8_t data[]){
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle)
 {
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 	/* Get RX message */
 	if (HAL_CAN_GetRxMessage(CanHandle, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
 	{
