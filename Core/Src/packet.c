@@ -16,8 +16,7 @@ typedef struct {
     uint64_t rvsd : 1;          // Reserved bit
     uint64_t command : 3;
     uint64_t type : 1;        // 1 bit for type (1 = command), equal 1
-
-} __attribute__((packed)) CMD_PACKET_INIT;
+} CMD_PACKET_INIT;
 
 typedef struct{
 	UART_HandleTypeDef *huart;

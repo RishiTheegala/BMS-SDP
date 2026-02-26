@@ -47,31 +47,31 @@ void BQ_Init() {
     // SendCommandPacket(BROAD_WRITE, data, 1, COMM_TIMEOUT_CONF, 0);
 
     // set active cells for OV/UV
-    data[0] = 0b00001111 & (CELLS_PER_DEVICE - 6);
+    data[0] = 0x0F & (CELLS_PER_DEVICE - 6);
     SendCommandPacket(BROAD_WRITE, data, 1, ACTIVE_CELL, 0);
 
     // enable TSREF
-    data[0] = 0b00000001;
+    data[0] = 0x01;
     SendCommandPacket(BROAD_WRITE, data, 1, CONTROL2, 0);
     // set up all GPIOs as ADC + OTUT inputs
-    data[0] = 0b00001001;
-    data[1] = 0b00001001;
-    data[2] = 0b00001001;
-    data[3] = 0b00001001;
+    data[0] = 0x0D;
+    data[1] = 0x0D;
+    data[2] = 0x0D;
+    data[3] = 0x0D;
     SendCommandPacket(BROAD_WRITE, data, 4, GPIO_CONF1, 0);
 
-    data[0] = 0b00001110;
+    data[0] = 0x0E;
     SendCommandPacket(BROAD_WRITE, data, 1, ADC_CTRL1, 0);
     data[0] = 0x06;
     SendCommandPacket(BROAD_WRITE, data, 1, ADC_CTRL3, 0);
     HAL_Delay(10);
 
-    data[0] = 0b00000000;
+    data[0] = 0x0;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_MSK1, 0);
-    data[0] = 0b01000000;
+    data[0] = 0x80;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_MSK2, 0);
 
-    // // clear all faults
+    // clear all faults
     data[0] = 0xFF;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
@@ -153,12 +153,16 @@ void BQ_AutoAddressing() {
     data[0] = 0x02;
     SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, 0);
 
-    // data[0] = 0x00;  
-    // SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
-    // data[0] = 0x03;
-    // SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
-    data[0] = 0x01;  
-    SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
+	if(NUM_BQ_DEVICES > 1) {
+		data[0] = 0x00;  
+		SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
+		data[0] = 0x03;
+		SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
+	}
+	else{
+		data[0] = 0x01;  
+		SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
+	}
 
     DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
     HAL_Delay(2);
@@ -170,7 +174,7 @@ void BQ_AutoAddressing() {
 
 void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     uint8_t data[1];
-    data[0] = 0b01000000;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
+    data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
     // HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
@@ -193,7 +197,7 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     // }
 	HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
-    data[0] = 0b00000000;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
+    data[0] = 0x0;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
@@ -216,12 +220,7 @@ void BQ_ReadTemps()
 
 void BQ_ReadCurrent() {
     ReadRegister(SINGLE_READ, 1, CURRENT_HI, 3);
-    int32_t curr;
-    ((uint8_t *)&curr)[2] = rx_buffers[0][4];
-    ((uint8_t *)&curr)[1] = rx_buffers[0][5];
-    ((uint8_t *)&curr)[0] = rx_buffers[0][6];
-    curr = curr << 8;
-    curr = curr >> 8;
+    int32_t curr = rx_buffers[0][0] << 16 | rx_buffers[0][1] << 8 | rx_buffers[0][2];
     BQ_Data.current = curr;
 }
 
@@ -262,13 +261,13 @@ void BQ_HandleBalancing() {
     data[0] = 0x3F;
     SendCommandPacket(BROAD_WRITE, data, 1, VCB_DONE_THRESH, 0);
 
-    data[0] = 0b00000101;  // OVUV_GO, OVUV_MODE round robin
+    data[0] = 0x05;  // OVUV_GO, OVUV_MODE round robin
     SendCommandPacket(BROAD_WRITE, data, 1, OVUV_CTRL, 0);
 
 
     // start balancing with FLTSTOP_EN to stop on fault, OTCB_EN to pause on overtemp, AUTO_BAL to automatically cycle
     // between even/odd
-    data[0] = 0b00110011;
+    data[0] = 0x33;
     SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
@@ -290,14 +289,14 @@ void BQ_StopBalancing() {
         CB_CELL1_CTRL + (CELLS_PER_DEVICE / 2) + 1 - CELLS_PER_DEVICE,
         0);
 
-    data[0] = 0b00110011;  // write BAL_GO to process registers
+    data[0] = 0x33;  // write BAL_GO to process registers
     SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 
     // clear OV faults
-    data[0] = 0b00001000;
+    data[0] = 0x08;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
     // reset fault mask 1 to re-enable OV faults
-    data[0] = 0b00000000;
+    data[0] = 0x0;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_MSK1, 0);
 
 }
@@ -308,19 +307,19 @@ void BQ_RunOpenWireCheck()
     // Before starting the open wire detection, the host ensures
     // The Main ADC is running in continuous mode
     // Configure the open wire detection threshold through DIAG_COMP_CTRL2[OW_THR3:0]
-    data[0] = 0x0 | 6;  // 6*300mv+500mv=2.3v threshold
+    data[0] = 0x01;  // 1*300mv+500mv=0.8v threshold
     SendCommandPacket(BROAD_WRITE, data, 1, DIAG_COMP_CTRL2, 0);
 
     // To start the open wire comparison
     // Turn on the VC pins current sink or source through DIAG_COMP_CTRL3[OW_SNK1:0]
-    data[0] = 0b00010000;
+    data[0] = 0x10;
     SendCommandPacket(BROAD_WRITE, data, 1, DIAG_COMP_CTRL3, 0);
 
     // Wait for dV/dt time to deplete capacitors
     HAL_Delay(3);  // depletes 0.47uf at 380ua minimum, 808V/s, will deplete to at most 1.776V
 
     // For VC open wire detection, select DIAG_COMP_CTRL3[COMP_ADC_SEL2:0] = OW VC check (0b010) and set COMP_ADC_GO=1
-    data[0] = 0b00010101;  // leave current sinks on
+    data[0] = 0x15;  // leave current sinks on
     SendCommandPacket(BROAD_WRITE, data, 1, DIAG_COMP_CTRL3, 0);
 
     // Device runs comparisons
@@ -332,29 +331,18 @@ void BQ_RunOpenWireCheck()
         complete = 0xFF;
         for (int i = 0; i < NUM_BQ_DEVICES; i++)
         {
-            complete &= rx_buffers[i][0] & 0b00001000;
+            complete &= rx_buffers[i][0] & 0x08;
         }
     }
 
     // Turns of all current sinks and sources through DIAG_COMP_CTRL3[OW_SNK1:0]
-    data[0] = 0b00000000;
+    data[0] = 0x0;
     SendCommandPacket(BROAD_WRITE, data, 1, DIAG_COMP_CTRL3, 0);
-
-    // Checks the FAULT_COMP_VCOW1/2 registers for comparison result
-    // Just check fault summary
-    // May not be needed, can return void and let nfault trigger interrupt
-    // ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
-    // int ow_fault = 0;
-    // for (int i = 0; i < NUM_BQ_DEVICES; i++)
-    // {
-    //     ow_fault |= rx_buffers[NUM_BQ_DEVICES - i - 1][0] & 0b01000000;
-    // }
-    // return ow_fault;
 }
 
 void BQ_SetOVUVOTUT() {
     uint8_t data[1];
-    data[0] = 0b00000101;
+    data[0] = 0x05;
     SendCommandPacket(BROAD_WRITE, data, 1, OVUV_CTRL, 0);
     // SendCommandPacket(BROAD_WRITE, data, 1, OTUT_CTRL, 0);
 }
