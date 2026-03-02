@@ -327,6 +327,10 @@ void BQ_Main();
 void BQ_Init();
 int32_t BQ_GetCurrent();
 float BQ_GetVoltage(int cell);
+float BQ_GetTemp(int thermistor);
+int BQ_GetOVUVOWFault(int cell);
+int BQ_GetOTUTFault(int device);
+int BQ_GetBMSFault();
 
 void BQ_ReadVoltages();
 #endif
