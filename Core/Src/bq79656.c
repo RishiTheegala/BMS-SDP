@@ -11,8 +11,7 @@
 typedef enum {
     STATE_INIT,
     STATE_ACTIVE,
-    STATE_FAULT,
-    STATE_SLEEP
+    STATE_FAULT
 } system_state_t;
 
 typedef struct {
@@ -89,18 +88,15 @@ void BQ_Update() {
             break;
 
         case STATE_ACTIVE:
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_RESET) { // GPIO checking NFAULT pin is high
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_RESET) { // GPIO checking NFAULT pin is low
                 current_state = STATE_FAULT;
                 BQ_Data.bms_fault = 1;
+                BQ_EnterSleep();
             }
             break;
 
         case STATE_FAULT:
-            current_state = STATE_SLEEP;
-            break;
-
-        case STATE_SLEEP:
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET) { // GPIO checking NFAULT pin is low
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET) { // GPIO checking NFAULT pin is high
                 current_state = STATE_ACTIVE;
                 BQ_Data.bms_fault = 0;
                 BQ_ExitSleep();
@@ -124,10 +120,9 @@ void BQ_Main() {
             break;
         case STATE_FAULT:
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // TODO: Safety Daisy Chain
-            BQ_EnterSleep();
-            break;
-        case STATE_SLEEP:
-        
+            BQ_ReadVoltages();
+            BQ_ReadTemps();
+            BQ_ReadCurrent();
             break;
         default:
             current_state = STATE_INIT;
@@ -371,7 +366,6 @@ void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float u
 void BQ_ReadFaults() {
     ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
     if (!rx_buffers[0][0]) return;
-    BQ_ReadVoltages();
     for (int i = 0; i < NUM_DEVICES; i++) {
         if (rx_buffers[i][0] & 0b01000100) {
             for (int cell = 0; cell < CELLS_PER_DEVICE; cell++) {
