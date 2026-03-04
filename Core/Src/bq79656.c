@@ -124,7 +124,7 @@ void BQ_Main() {
     BQ_Update();
 }
 
-void BQ_AutoAddressing() {
+void BQ_AutoAddressing(void) {
     uint8_t data[256];
 
     data[0] = 0;
@@ -160,7 +160,7 @@ void BQ_AutoAddressing() {
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
 }
 
-void BQ_ReadVoltages() { // TODO: Convert readings to voltage
+void BQ_ReadVoltages(void) { // TODO: Convert readings to voltage
     uint8_t data[1];
     data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
@@ -179,6 +179,7 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     //     for (uint8_t cell = 0; cell < 16; cell++) {
             int16_t rawRead = (rx_buffers[0][0] << 8) | rx_buffers[0][1];
             BQ_Data.voltage[0] = rawRead * ADC_RESOLUTION;
+            BQ_Data.voltage[0] = rawRead; 
     //     }
     // }
 	HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
@@ -187,7 +188,7 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
-void BQ_ReadTemps()
+void BQ_ReadTemps(void)
 {
     // read temps from battery
     ReadRegister(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
@@ -205,13 +206,13 @@ void BQ_ReadTemps()
     }
 }
 
-void BQ_ReadCurrent() {
+void BQ_ReadCurrent(void) {
     ReadRegister(SINGLE_READ, 1, CURRENT_HI, 3);
     int32_t curr = rx_buffers[0][0] << 16 | rx_buffers[0][1] << 8 | rx_buffers[0][2];
     BQ_Data.current = curr;
 }
 
-void BQ_ModuleBalancing() {
+void BQ_ModuleBalancing(void) {
     uint8_t data[1];
     data[0] = 0x01;
     SendCommandPacket(BROAD_WRITE, data, 1, MB_TIMER_CTRL, 0);
@@ -224,7 +225,7 @@ void BQ_ModuleBalancing() {
     SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
-void BQ_HandleBalancing() {
+void BQ_HandleBalancing(void) {
     uint8_t data[CELLS_PER_DEVICE / 2];
     // data[0] = 0b00001000;
     // SendCommandPacket(STACK_WRITE, data, 1, FAULT_MSK1, 0);
@@ -258,7 +259,7 @@ void BQ_HandleBalancing() {
     SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
-void BQ_StopBalancing() {
+void BQ_StopBalancing(void) {
     uint8_t data[CELLS_PER_DEVICE / 2];
 
     for (int i = 0; i < CELLS_PER_DEVICE / 2; i++) {
@@ -288,7 +289,7 @@ void BQ_StopBalancing() {
 
 }
 
-void BQ_RunOpenWireCheck()
+void BQ_RunOpenWireCheck(void)
 {
     uint8_t data[1];
     // Before starting the open wire detection, the host ensures
@@ -327,7 +328,7 @@ void BQ_RunOpenWireCheck()
     SendCommandPacket(BROAD_WRITE, data, 1, DIAG_COMP_CTRL3, 0);
 }
 
-void BQ_SetOVUVOTUT() {
+void BQ_SetOVUVOTUT(void) {
     uint8_t data[1];
     data[0] = 0x05;
     SendCommandPacket(BROAD_WRITE, data, 1, OVUV_CTRL, 0);
@@ -353,19 +354,19 @@ void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float u
     BQ_SetOVUVOTUT();
 }
 
-void BQ_EnterSleep() {
+void BQ_EnterSleep(void) {
     uint8_t data[1];
     data[0] = 0x04;
     SendCommandPacket(BROAD_WRITE, data, 1, CONTROL1, 0);
 }
 
-void BQ_ExitSleep() {
+void BQ_ExitSleep(void) {
     send_Wake(1000);
     HAL_Delay(10);
     DummyReadResponse(BROAD_READ, 0, OTP_ECC_TEST, 1);
 }
 
-int32_t BQ_GetCurrent() {
+int32_t BQ_GetCurrent(void) {
     return BQ_Data.current;
 }
 

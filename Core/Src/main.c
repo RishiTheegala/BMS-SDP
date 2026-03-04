@@ -54,7 +54,6 @@ int main(void)
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 	MX_TIM6_Init();
-	MX_IWDG_Init();
 
 	// Blink the LED
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
@@ -64,12 +63,12 @@ int main(void)
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 	HAL_Delay(50);
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-	HAL_Delay(50);
 
 	send_Wake(2400);  
 	UART_Init(&huart1);
 	Packet_Init(&huart1);
-//	BQ_Init();
+	BQ_Init();
+	//MX_IWDG_Init();
 	CAN_Start();
 
 	uint32_t lastBQRead = HAL_GetTick();
@@ -77,29 +76,32 @@ int main(void)
 
 	while (1)
 	{
-//		if(HAL_GetTick() - lastHeartbeat > BQ_SAMPLING_PERIOD_MS) {
-//			lastHeartbeat = HAL_GetTick();
-//			Telemetry_SendHeartbeat();
-//		}
+		if(rxFlag){
+			rxFlag = false;
+			CAN_HandlePacket(rxId, rxBuf);
+		}
+		
+		if(HAL_GetTick() - lastHeartbeat > CAN_HEARTBEAT_PERIOD_MS) {
+			lastHeartbeat = HAL_GetTick();
+			Telemetry_SendHeartbeat();
+		}
 
 		if(HAL_GetTick() - lastBQRead > BQ_SAMPLING_PERIOD_MS){
 			lastBQRead = HAL_GetTick();
 
 			BQ_ReadVoltages();
 
+			uint8_t test[1] = {'A'};
 			uint16_t rawReading= BQ_GetVoltage(0);
-			uint8_t voltage[2] = { 
-				rawReading& 0xFF,
-				rawReading>> 8
-			};
-			//int16_t voltage = (uint16_t)(BQ_GetVoltage(0) * 1000);
-			HAL_UART_Transmit(&huart2, voltage, 2, HAL_MAX_DELAY);
+			float voltage = BQ_GetVoltage(0);
 
-			if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {
-				Error_Handler(); // Pet the watchdog
-			}
+			HAL_UART_Transmit(&huart2, test, 1, HAL_MAX_DELAY);
+
 		}
 
+		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {
+			Error_Handler(); // Pet the watchdog
+		}
 //		// data[0] = 0xBC;
 //		// data[1] = 0x78;
 //		// data[2] = 0xB7;

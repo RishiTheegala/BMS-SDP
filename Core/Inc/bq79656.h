@@ -342,10 +342,23 @@ typedef enum Register {
     CURRENT_LO = 0x5D8
 } Register;
 
-void BQ_Main();
-void BQ_Init();
-int32_t BQ_GetCurrent();
+void BQ_Main(void);
+void BQ_Init(void);
+void BQ_AutoAddressing(void);
+int32_t BQ_GetCurrent(void);
 float BQ_GetVoltage(int cell);
+void BQ_ModuleBalancing(void);
 
-void BQ_ReadVoltages();
+void BQ_ReadVoltages(void);
+void BQ_ReadTemps(void);
+void BQ_ReadCurrent(void);
+
+void BQ_HandleBalancing(void);
+void BQ_StopBalancing(void);
+void BQ_RunOpenWireCheck(void);
+
+void BQ_SetOVUVOTUT(void);
+void BQ_EnterSleep(void);
+void BQ_ExitSleep(void);
+
 #endif

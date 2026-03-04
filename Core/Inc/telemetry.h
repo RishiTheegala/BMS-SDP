@@ -1,10 +1,11 @@
 #pragma once
 
+#include <stdint.h>
 typedef enum {
 	VOLTAGE_INDEX = 0,
 	TEMP_INDEX
 } TelemetryQueryIndex_t;
 
 void Telemetry_SendHeartbeat(void);
-void Telemetry_Respond(void);
+void Telemetry_Respond(uint32_t id);
 

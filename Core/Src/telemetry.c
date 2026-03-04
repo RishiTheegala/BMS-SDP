@@ -26,11 +26,7 @@ void Telemetry_SendHeartbeat(void){
 	CAN_Transmit(&heartbeat.id, heartbeat.data);
 }
 
-void Telemetry_Respond(void){
-	uint32_t id = 0;
-	uint8_t buf[8];
-
-	if(!CAN_Receive(&id, buf)) return;
+void Telemetry_Respond(uint32_t id){
 	uint8_t dataType = (id >> 8) & 0xFF;
 	uint8_t index = id & 0xFF;
 
