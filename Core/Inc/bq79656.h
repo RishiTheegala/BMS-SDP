@@ -20,7 +20,6 @@ typedef struct {
     int fault_dev_id;
 } BQ_Data_t;
 
-volatile static BQ_Data_t BQ_Data;
 typedef enum RequestType {
     SINGLE_READ = 0b000,     // single device read
     SINGLE_WRITE = 0b001,    // single device write

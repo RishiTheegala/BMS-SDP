@@ -21,6 +21,7 @@
 #include "can.h"
 #include "stm32f303x8.h"
 #include "stm32f3xx_hal.h"
+#include "stm32f3xx_hal_def.h"
 #include "stm32f3xx_hal_gpio.h"
 #include "stm32f3xx_hal_uart.h"
 #include "usart.h"
@@ -32,7 +33,9 @@
 #include "can_agent.h"
 #include "packet.h"
 #include "telemetry.h"
+#include "util.h"
 #include "UART.h"
+
 #include <stdint.h>
 
 extern UART_HandleTypeDef huart1;
@@ -68,7 +71,7 @@ int main(void)
 	UART_Init(&huart1);
 	Packet_Init(&huart1);
 	BQ_Init();
-	//MX_IWDG_Init();
+	MX_IWDG_Init();
 	CAN_Start();
 
 	uint32_t lastBQRead = HAL_GetTick();
@@ -76,10 +79,10 @@ int main(void)
 
 	while (1)
 	{
-		if(rxFlag){
-			rxFlag = false;
-			CAN_HandlePacket(rxId, rxBuf);
-		}
+	//	if(rxFlag){
+	//		rxFlag = false;
+	//		CAN_HandlePacket(rxId, rxBuf);
+	//	}
 		
 		if(HAL_GetTick() - lastHeartbeat > CAN_HEARTBEAT_PERIOD_MS) {
 			lastHeartbeat = HAL_GetTick();
@@ -87,16 +90,19 @@ int main(void)
 		}
 
 		if(HAL_GetTick() - lastBQRead > BQ_SAMPLING_PERIOD_MS){
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 			lastBQRead = HAL_GetTick();
 
 			BQ_ReadVoltages();
 
-			uint8_t test[1] = {'A'};
-			uint16_t rawReading= BQ_GetVoltage(0);
-			float voltage = BQ_GetVoltage(0);
+			for(int i = 0; i < CELLS_PER_DEVICE; i++)
+			{
+				int16_t currCellVoltage = (int16_t) (BQ_GetVoltage(i) * 1000.0F);
+				HAL_UART_Transmit(&huart2, (uint8_t*) &currCellVoltage, 2, HAL_MAX_DELAY);
+			}
 
-			HAL_UART_Transmit(&huart2, test, 1, HAL_MAX_DELAY);
-
+			uint16_t newLine = 0xFF;
+			HAL_UART_Transmit(&huart2, (uint8_t*) &newLine, 2, HAL_MAX_DELAY);
 		}
 
 		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {

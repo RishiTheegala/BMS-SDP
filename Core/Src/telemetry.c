@@ -37,13 +37,13 @@ void Telemetry_Respond(uint32_t id){
 		case VOLTAGE_INDEX:
 		{
 			if(index >= NUM_CELLS) return;
-			response_value = BQ_Data.voltage[index];
+			response_value = BQ_GetVoltage(index);
 			break;
 		}
 		case TEMP_INDEX:
 		{
 			if(index >= THERMISTORS_PER_DEVICE * NUM_BQ_DEVICES) return;
-			response_value = BQ_Data.temp[index];
+			response_value = BQ_GetVoltage(index); // TODO: change to gettemp
 			break;
 		}
 	}
