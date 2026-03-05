@@ -167,18 +167,10 @@ void BQ_ReadVoltages(void) { // TODO: Convert readings to voltage
     data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
-    // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
-    //     for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
-	//         ReadRegister(BROAD_READ, 0, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), CELLS_PER_DEVICE * 2);
-    //         int16_t voltage = (rx_buffers[device][0] << 8) | rx_buffers[device][1];
-    //         BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = voltage * ADC_RESOLUTION;  // convert to volts
-    //     }
-    // }
-
 	//HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
 	//ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
 	for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
-		ReadRegister(BROAD_READ, 0, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), CELLS_PER_DEVICE * 2);
+		ReadRegister(SINGLE_READ, device, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), CELLS_PER_DEVICE * 2);
 		for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
 			int16_t rawRead = ((rx_buffers[0][cell * 2] << 8) | (rx_buffers[0][cell * 2 + 1]));
 			//uint16_t rawRead = (rx_buffers[0][cell * 2] << 8) | 

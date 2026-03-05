@@ -17,6 +17,18 @@ static uint32_t TxMailbox;
 static CAN_RxHeaderTypeDef RxHeader;
 static uint8_t RxData[8];
 
+typedef enum {
+	TELEMETRY = 0,
+	COMMAND = 1,
+} CAN_PacketType_t;
+
+typedef enum {
+	START_MODULE_BALANCING = 0,
+	STOP_MODULE_BALANCING,
+	START_CELL_BALANCING,
+	STOP_CELL_BALANCING,
+} CAN_CommandType_t;
+
 void CAN_Start(void){
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.RTR = CAN_RTR_DATA;
@@ -34,21 +46,41 @@ bool CAN_Transmit(uint32_t *id, uint8_t data[]){
 }
 
 void CAN_HandlePacket(uint32_t id, uint8_t data[8]){
-	uint8_t type = id >> 16;
+	CAN_PacketType_t type = id >> 16;
 	
 	switch (type){
-		case 0: // telem packet
+		case TELEMETRY:
 		{
 			Telemetry_Respond(id);
 			break;
 		}
-		case 1: // command packet
+		case COMMAND:
 		{
-			uint16_t command = id & 0xFF;
+			CAN_CommandType_t command = id & 0xFF;
 			switch (command) {
-				case 1:
+				case START_MODULE_BALANCING:
 				{
 					BQ_ModuleBalancing();
+					break;
+				}
+				case STOP_MODULE_BALANCING:
+				{
+					// stop module balancing
+					break;
+				}
+				case START_CELL_BALANCING:
+				{
+					BQ_HandleBalancing();
+					break;
+				}
+				case STOP_CELL_BALANCING:
+				{
+					BQ_StopBalancing();
+					break;
+				}
+				default:
+				{
+					break;
 				}
 			}
 			break;
@@ -69,6 +101,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle)
 		Error_Handler();
 	}
 	else {
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 		rxFlag = true;
 		rxId = RxHeader.StdId;
 		memcpy(rxBuf, RxData, 8);
