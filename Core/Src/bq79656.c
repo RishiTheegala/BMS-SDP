@@ -75,21 +75,21 @@ void BQ_Update() {
     {
         case STATE_INIT:
             current_state = STATE_ACTIVE;
+            BQ_Data.bms_fault = 0;
             break;
 
         case STATE_ACTIVE:
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_RESET) { // GPIO checking NFAULT pin is high
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_RESET) { // GPIO checking NFAULT pin is low
                 current_state = STATE_FAULT;
+                BQ_Data.bms_fault = 1;
+                BQ_EnterSleep();
             }
             break;
 
         case STATE_FAULT:
-            current_state = STATE_SLEEP;
-            break;
-
-        case STATE_SLEEP:
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET) { // GPIO checking NFAULT pin is low
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET) { // GPIO checking NFAULT pin is high
                 current_state = STATE_ACTIVE;
+                BQ_Data.bms_fault = 0;
                 BQ_ExitSleep();
             }
             break;
@@ -104,25 +104,23 @@ void BQ_Main() {
             BQ_Init();
             break;
         case STATE_ACTIVE:
-            // TODO: Safety Daisy Chain
-
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET); // check sdp pin
             BQ_ReadVoltages();
             BQ_ReadTemps();
             BQ_ReadCurrent();
             break;
         case STATE_FAULT:
-            // TODO: Safety Daisy Chain
-
-            BQ_EnterSleep();
-            break;
-        case STATE_SLEEP:
-        
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // TODO: Safety Daisy Chain
+            BQ_ReadVoltages();
+            BQ_ReadTemps();
+            BQ_ReadCurrent();
             break;
         default:
             current_state = STATE_INIT;
             break;
     }
 
+    BQ_ReadFaults();
     BQ_Update();
 }
 
@@ -355,6 +353,33 @@ void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float u
     BQ_SetOVUVOTUT();
 }
 
+void BQ_ReadFaults() {
+    ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
+    if (!rx_buffers[0][0]) return;
+    for (int i = 0; i < NUM_DEVICES; i++) {
+        if (rx_buffers[i][0] & 0b01000100) {
+            for (int cell = 0; cell < CELLS_PER_DEVICE; cell++) {
+                float voltage = BQ_Data.voltage[CELLS_PER_DEVICE*i + cell];
+                if (voltage > OV_THRESH) {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 1;
+                } else if (voltage < OW_THRESH) {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 3;
+                } else if (voltage < UV_THRESH) {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 2;
+                } else {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 0;
+                }
+            }
+        }
+
+        if (rx_buffers[i][0] & 0b00001000) {
+            BQ_Data.otut_fault_status[i] = 1;
+        } else {
+            BQ_Data.otut_fault_status[i] = 0;
+        }
+    }
+}
+
 void BQ_EnterSleep(void) {
     uint8_t data[1];
     data[0] = 0x04;
@@ -373,4 +398,20 @@ int32_t BQ_GetCurrent(void) {
 
 float BQ_GetVoltage(int cell) {
     return BQ_Data.voltage[cell];
+}
+
+float BQ_GetTemp(int thermistor) {
+    return BQ_Data.temp[thermistor];
+}
+
+int BQ_GetOVUVOWFault(int cell) {
+    return BQ_Data.ovuvow_fault_status[cell];
+}
+
+int BQ_GetOTUTFault(int device) {
+    return BQ_Data.otut_fault_status[device];
+}
+
+int BQ_GetBMSFault(void) {
+    return BQ_Data.bms_fault;
 }

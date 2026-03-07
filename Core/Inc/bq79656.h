@@ -7,18 +7,17 @@
 typedef enum {
     STATE_INIT,
     STATE_ACTIVE,
-    STATE_FAULT,
-    STATE_SLEEP
-} System_State_t;
+    STATE_FAULT
+} system_state_t;
 
 typedef struct {
     int32_t current;
     float voltage[TOTAL_CELLS];
     float temp[TOTAL_THERMISTORS];
-    int fault_status;
-    int fault_sum;
-    int fault_dev_id;
-} BQ_Data_t;
+    int ovuvow_fault_status[TOTAL_CELLS];
+    int otut_fault_status[NUM_DEVICES];
+    int bms_fault;
+} bq_data_t;
 
 typedef enum RequestType {
     SINGLE_READ = 0b000,     // single device read

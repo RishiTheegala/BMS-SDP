@@ -12,5 +12,8 @@
 
 #define MAX_BROAD_READ_DATA_SIZE 11
 #define BQ_V_LSB_ADC 190.73 * 0.000001
+#define OV_THRESH 2.7
+#define UV_THRESH 1.2
+#define OW_THRESH 0.8
 
 uint8_t ReverseByteBits(uint8_t b);
