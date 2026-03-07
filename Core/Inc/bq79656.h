@@ -346,14 +346,15 @@ void BQ_Init(void);
 void BQ_AutoAddressing(void);
 int32_t BQ_GetCurrent(void);
 float BQ_GetVoltage(int cell);
-void BQ_ModuleBalancing(void);
+void BQ_ModuleBalancing(uint8_t time_thres);
 
 void BQ_ReadVoltages(void);
 void BQ_ReadTemps(void);
 void BQ_ReadCurrent(void);
 
-void BQ_HandleBalancing(void);
+void BQ_HandleBalancing(uint8_t time_thres);
 void BQ_StopBalancing(void);
+void BQ_StopModuleBalancing(void);
 void BQ_RunOpenWireCheck(void);
 
 void BQ_SetOVUVOTUT(void);

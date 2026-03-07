@@ -48,3 +48,8 @@ uint8_t UART_GetByte(void) {
 	read_index = (read_index + 1) % RX_BUFFER_SIZE;
     return resp;
 }
+
+uint8_t UART_GetBufferSize(void) {
+    if (write_index >= read_index) return write_index - read_index;
+    return RX_BUFFER_SIZE - (read_index - write_index);
+}

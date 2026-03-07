@@ -8,3 +8,4 @@
 void UART_Init(UART_HandleTypeDef *huart);
 uint8_t UART_GetByte(void);
 int UART_ClearRX(void);
+uint8_t UART_GetBufferSize(void);

@@ -167,18 +167,15 @@ void BQ_ReadVoltages(void) { // TODO: Convert readings to voltage
     data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
-	//HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
-	//ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
+	HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
 	for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
 		ReadRegister(SINGLE_READ, device, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), CELLS_PER_DEVICE * 2);
 		for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
 			int16_t rawRead = ((rx_buffers[0][cell * 2] << 8) | (rx_buffers[0][cell * 2 + 1]));
-			//uint16_t rawRead = (rx_buffers[0][cell * 2] << 8) | 
-			//					rx_buffers[0][cell * 2 + 1];
 			BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = rawRead * ADC_RESOLUTION;
 		}
 	}
-	//HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
+	HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
     data[0] = 0x0;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
@@ -208,9 +205,9 @@ void BQ_ReadCurrent(void) {
     BQ_Data.current = curr;
 }
 
-void BQ_ModuleBalancing(void) {
+void BQ_ModuleBalancing(uint8_t time_thres) {
     uint8_t data[1];
-    data[0] = 0x01;
+    data[0] = time_thres;
     SendCommandPacket(BROAD_WRITE, data, 1, MB_TIMER_CTRL, 0);
     data[0] = 0x00;
     SendCommandPacket(BROAD_WRITE, data, 1, VMB_DONE_THRESH, 0);
@@ -221,13 +218,21 @@ void BQ_ModuleBalancing(void) {
     SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
-void BQ_HandleBalancing(void) {
+void BQ_StopModuleBalancing(void) {
+    uint8_t data[1];
+    data[0] = 0x00;
+    SendCommandPacket(BROAD_WRITE, data, 1, MB_TIMER_CTRL, 0);
+    data[0] = 0x02;
+    SendCommandPacket(BROAD_WRITE, data, 1, BAL_CTRL2, 0);
+}
+
+void BQ_HandleBalancing(uint8_t time_thres) {
     uint8_t data[CELLS_PER_DEVICE / 2];
     // data[0] = 0b00001000;
     // SendCommandPacket(STACK_WRITE, data, 1, FAULT_MSK1, 0);
 
     for (int i = 0; i < CELLS_PER_DEVICE / 2; i++) {
-        data[i] = 0x4;
+        data[i] = time_thres;
     }
 
     SendCommandPacket(BROAD_WRITE,

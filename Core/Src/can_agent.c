@@ -60,17 +60,17 @@ void CAN_HandlePacket(uint32_t id, uint8_t data[8]){
 			switch (command) {
 				case START_MODULE_BALANCING:
 				{
-					BQ_ModuleBalancing();
+					BQ_ModuleBalancing(data[0]);
 					break;
 				}
 				case STOP_MODULE_BALANCING:
 				{
-					// stop module balancing
+					BQ_StopModuleBalancing();
 					break;
 				}
 				case START_CELL_BALANCING:
 				{
-					BQ_HandleBalancing();
+					BQ_HandleBalancing(data[0]);
 					break;
 				}
 				case STOP_CELL_BALANCING:
