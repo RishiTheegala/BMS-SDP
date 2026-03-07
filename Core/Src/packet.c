@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "UART.h"
+#include "bq79656.h"
 #include "packet.h"
 #include "util.h"
 #include "stm32f3xx_hal.h"
 
 // Define the rx_buffers array here (declared as extern in packet.h)
-uint8_t rx_buffers[NUM_DEVICES][256];
+uint8_t rx_buffers[NUM_BQ_DEVICES][256];
 
 #define CHECK_POLY 0xC001
 
@@ -16,7 +17,7 @@ typedef struct {
     uint64_t rvsd : 1;          // Reserved bit
     uint64_t command : 3;
     uint64_t type : 1;        // 1 bit for type (1 = command), equal 1
-} CMD_PACKET_INIT;
+} CommandPacket_t;
 
 typedef struct{
 	UART_HandleTypeDef *huart;
@@ -35,7 +36,7 @@ void Packet_Init(UART_HandleTypeDef *huart) {
 uint8_t rx_buffer[256];
 
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
-    CMD_PACKET_INIT packet = {0};
+    CommandPacket_t packet = {0};
 
     packet.type = 1;
     packet.command = cmd; // op code
@@ -94,14 +95,13 @@ void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
     uint8_t data[1];
     data[0] = length - 1;
     SendCommandPacket(cmd, data, 1, reg, device);
+	HAL_Delay(4);
 
     int numDevices = 1;
     if (cmd > 1) {
-        numDevices = NUM_DEVICES;
+        numDevices = NUM_BQ_DEVICES;
         if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
     }
-
-    HAL_Delay(4);
 
     for (int i = 0; i < numDevices; i++) {
         GetPacket();

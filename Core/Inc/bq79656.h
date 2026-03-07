@@ -2,6 +2,23 @@
 #define PACKET_B
 #include <stdint.h>
 
+#include "util.h"
+
+typedef enum {
+    STATE_INIT,
+    STATE_ACTIVE,
+    STATE_FAULT
+} system_state_t;
+
+typedef struct {
+    int32_t current;
+    float voltage[TOTAL_CELLS];
+    float temp[TOTAL_THERMISTORS];
+    int ovuvow_fault_status[TOTAL_CELLS];
+    int otut_fault_status[NUM_DEVICES];
+    int bms_fault;
+} bq_data_t;
+
 typedef enum RequestType {
     SINGLE_READ = 0b000,     // single device read
     SINGLE_WRITE = 0b001,    // single device write
@@ -323,14 +340,24 @@ typedef enum Register {
     CURRENT_LO = 0x5D8
 } Register;
 
-void BQ_Main();
-void BQ_Init();
-int32_t BQ_GetCurrent();
+void BQ_Main(void);
+void BQ_Init(void);
+void BQ_AutoAddressing(void);
+int32_t BQ_GetCurrent(void);
 float BQ_GetVoltage(int cell);
-float BQ_GetTemp(int thermistor);
-int BQ_GetOVUVOWFault(int cell);
-int BQ_GetOTUTFault(int device);
-int BQ_GetBMSFault();
+void BQ_ModuleBalancing(uint8_t time_thres);
 
-void BQ_ReadVoltages();
+void BQ_ReadVoltages(void);
+void BQ_ReadTemps(void);
+void BQ_ReadCurrent(void);
+
+void BQ_HandleBalancing(uint8_t time_thres);
+void BQ_StopBalancing(void);
+void BQ_StopModuleBalancing(void);
+void BQ_RunOpenWireCheck(void);
+
+void BQ_SetOVUVOTUT(void);
+void BQ_EnterSleep(void);
+void BQ_ExitSleep(void);
+
 #endif

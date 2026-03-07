@@ -6,5 +6,6 @@
 #include "stm32f3xx_hal.h"
 
 void UART_Init(UART_HandleTypeDef *huart);
-uint8_t UART_GetByte();
-int UART_ClearRX();
+uint8_t UART_GetByte(void);
+int UART_ClearRX(void);
+uint8_t UART_GetBufferSize(void);

@@ -45,7 +45,7 @@ void MX_CAN_Init(void)
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN;
   hcan.Init.Prescaler = 1;
-  hcan.Init.Mode = CAN_MODE_LOOPBACK;
+  hcan.Init.Mode = CAN_MODE_NORMAL;
   hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan.Init.TimeSeg1 = CAN_BS1_6TQ;
   hcan.Init.TimeSeg2 = CAN_BS2_1TQ;
@@ -101,8 +101,8 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**CAN GPIO Configuration
-    PA11     ------> CAN_RX
-    PA12     ------> CAN_TX
+    PA11 (D10)     ------> CAN_RX
+    PA12 (D2)     ------> CAN_TX
     */
     GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -130,8 +130,8 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     __HAL_RCC_CAN1_CLK_DISABLE();
 
     /**CAN GPIO Configuration
-    PA11     ------> CAN_RX
-    PA12     ------> CAN_TX
+    PA11 (D10)     ------> CAN_RX
+    PA12 (D2)     ------> CAN_TX
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
 
