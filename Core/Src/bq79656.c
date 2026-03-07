@@ -11,22 +11,20 @@
 typedef enum {
     STATE_INIT,
     STATE_ACTIVE,
-    STATE_FAULT,
-    STATE_SLEEP
+    STATE_FAULT
 } system_state_t;
 
 typedef struct {
     int32_t current;
     float voltage[TOTAL_CELLS];
     float temp[TOTAL_THERMISTORS];
-    int fault_status;
-    int fault_sum;
-    int fault_dev_id;
+    int ovuvow_fault_status[TOTAL_CELLS];
+    int otut_fault_status[NUM_DEVICES];
+    int bms_fault;
 } bq_data_t;
 
 static bq_data_t BQ_Data;
 
-const static int NUM_BQ_DEVICES = NUM_DEVICES;
 static system_state_t current_state = STATE_INIT;
 
 void BQ_AutoAddressing();
@@ -37,6 +35,7 @@ void BQ_EnterSleep();
 void BQ_ExitSleep();
 void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float ut_thresh);
 void BQ_RunOpenWireCheck();
+void BQ_ReadFaults();
 
 void BQ_Init() {
     BQ_AutoAddressing();
@@ -76,7 +75,7 @@ void BQ_Init() {
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST1, 0);
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
 
-    BQ_SetProtectors(2.7, 1.2, 0, 0);
+    BQ_SetProtectors(OV_THRESH, UV_THRESH, 0, 0);
     BQ_RunOpenWireCheck();
 }
 
@@ -85,21 +84,21 @@ void BQ_Update() {
     {
         case STATE_INIT:
             current_state = STATE_ACTIVE;
+            BQ_Data.bms_fault = 0;
             break;
 
         case STATE_ACTIVE:
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_RESET) { // GPIO checking NFAULT pin is high
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_RESET) { // GPIO checking NFAULT pin is low
                 current_state = STATE_FAULT;
+                BQ_Data.bms_fault = 1;
+                BQ_EnterSleep();
             }
             break;
 
         case STATE_FAULT:
-            current_state = STATE_SLEEP;
-            break;
-
-        case STATE_SLEEP:
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET) { // GPIO checking NFAULT pin is low
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET) { // GPIO checking NFAULT pin is high
                 current_state = STATE_ACTIVE;
+                BQ_Data.bms_fault = 0;
                 BQ_ExitSleep();
             }
             break;
@@ -114,25 +113,23 @@ void BQ_Main() {
             BQ_Init();
             break;
         case STATE_ACTIVE:
-            // TODO: Safety Daisy Chain
-
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET); // check sdp pin
             BQ_ReadVoltages();
             BQ_ReadTemps();
             BQ_ReadCurrent();
             break;
         case STATE_FAULT:
-            // TODO: Safety Daisy Chain
-
-            BQ_EnterSleep();
-            break;
-        case STATE_SLEEP:
-        
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // TODO: Safety Daisy Chain
+            BQ_ReadVoltages();
+            BQ_ReadTemps();
+            BQ_ReadCurrent();
             break;
         default:
             current_state = STATE_INIT;
             break;
     }
 
+    BQ_ReadFaults();
     BQ_Update();
 }
 
@@ -145,19 +142,19 @@ void BQ_AutoAddressing() {
     data[0] = 1;
     SendCommandPacket(BROAD_WRITE, data, 1, CONTROL1, 0);
 
-    for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
-        data[0] = device; // Assign address sequentially
+    for (uint8_t device = 0; device < NUM_DEVICES; device++) {
+        data[0] = device;
         SendCommandPacket(BROAD_WRITE, data, 1, DIR0_ADDR, 0);
     }
 
     data[0] = 0x02;
     SendCommandPacket(BROAD_WRITE, data, 1, COMM_CTRL, 0);
 
-	if(NUM_BQ_DEVICES > 1) {
+	if(NUM_DEVICES > 1) {
 		data[0] = 0x00;  
 		SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, 0);
 		data[0] = 0x03;
-		SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_BQ_DEVICES - 1);
+		SendCommandPacket(SINGLE_WRITE, data, 1, COMM_CTRL, NUM_DEVICES - 1);
 	}
 	else{
 		data[0] = 0x01;  
@@ -177,17 +174,19 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
     data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
     SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
-    // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
+    // HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
+    // for (uint8_t device = 0; device < NUM_DEVICES; device++) {
+    //     ReadRegister(SINGLE_READ, device, VCELL16_HI, CELLS_PER_DEVICE * 2);
     //     for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
-    //         ReadRegister(SINGLE_READ, device, VCELL16_HI + cell * 2, 2);
-    //         int16_t voltage = (rx_buffers[device][0] << 8) | rx_buffers[device][1];
+    //         int16_t voltage = (rx_buffers[0][cell * 2] << 8) | rx_buffers[0][(cell * 2) + 1];
     //         BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = voltage * ADC_RESOLUTION;  // convert to volts
     //     }
     // }
+    // HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
 	HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
     ReadRegister(BROAD_READ, 0, VCELL16_HI, 2);
-    // for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
+    // for (uint8_t device = 0; device < NUM_DEVICES; device++) {
     //     for (uint8_t cell = 0; cell < 16; cell++) {
             int16_t rawRead = (rx_buffers[0][0] << 8) | rx_buffers[0][1];
             BQ_Data.voltage[0] = rawRead * ADC_RESOLUTION;
@@ -201,16 +200,16 @@ void BQ_ReadVoltages() { // TODO: Convert readings to voltage
 
 void BQ_ReadTemps()
 {
-    // read temps from battery
-    ReadRegister(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
-
     // fill in kNumThermistors temperatures to array
-    for (int i = 0; i < NUM_BQ_DEVICES; i++)
+    for (int i = 0; i < NUM_DEVICES; i++)
     {
+        ReadRegister(SINGLE_READ, i, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
         for (int j = 0; j < THERMISTORS_PER_DEVICE; j++)
         {
-            int16_t temp = (rx_buffers[NUM_BQ_DEVICES - i - 1][(2 * j) + 1] << 8) | rx_buffers[NUM_BQ_DEVICES - i - 1][2 * j];
-            BQ_Data.temp[(i * THERMISTORS_PER_DEVICE) + j] = temp;
+            int16_t temp;
+            ((uint8_t *)&temp)[0] = rx_buffers[0][2 * j];
+            ((uint8_t *)&temp)[1] = rx_buffers[0][(2 * j) + 1];
+            // BQ_Data.temp[(i * THERMISTORS_PER_DEVICE) + j] = thermistor_.VoltageToTemperature(temp * BQ_V_LSB_GPIO);
         }
     }
     return;
@@ -305,7 +304,7 @@ void BQ_RunOpenWireCheck()
     // Before starting the open wire detection, the host ensures
     // The Main ADC is running in continuous mode
     // Configure the open wire detection threshold through DIAG_COMP_CTRL2[OW_THR3:0]
-    data[0] = 0x01;  // 1*300mv+500mv=0.8v threshold
+    data[0] = (OW_THRESH - 0.5)/0.3;  // 1*300mv+500mv=0.8v threshold
     SendCommandPacket(BROAD_WRITE, data, 1, DIAG_COMP_CTRL2, 0);
 
     // To start the open wire comparison
@@ -327,7 +326,7 @@ void BQ_RunOpenWireCheck()
     {
         ReadRegister(BROAD_READ, 0, ADC_STAT2, 1);
         complete = 0xFF;
-        for (int i = 0; i < NUM_BQ_DEVICES; i++)
+        for (int i = 0; i < NUM_DEVICES; i++)
         {
             complete &= rx_buffers[i][0] & 0x08;
         }
@@ -364,6 +363,33 @@ void BQ_SetProtectors(float ov_thresh, float uv_thresh, float ot_thresh, float u
     BQ_SetOVUVOTUT();
 }
 
+void BQ_ReadFaults() {
+    ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
+    if (!rx_buffers[0][0]) return;
+    for (int i = 0; i < NUM_DEVICES; i++) {
+        if (rx_buffers[i][0] & 0b01000100) {
+            for (int cell = 0; cell < CELLS_PER_DEVICE; cell++) {
+                float voltage = BQ_Data.voltage[CELLS_PER_DEVICE*i + cell];
+                if (voltage > OV_THRESH) {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 1;
+                } else if (voltage < OW_THRESH) {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 3;
+                } else if (voltage < UV_THRESH) {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 2;
+                } else {
+                    BQ_Data.ovuvow_fault_status[CELLS_PER_DEVICE*i + cell] = 0;
+                }
+            }
+        }
+
+        if (rx_buffers[i][0] & 0b00001000) {
+            BQ_Data.otut_fault_status[i] = 1;
+        } else {
+            BQ_Data.otut_fault_status[i] = 0;
+        }
+    }
+}
+
 void BQ_EnterSleep() {
     uint8_t data[1];
     data[0] = 0x04;
@@ -382,4 +408,20 @@ int32_t BQ_GetCurrent() {
 
 float BQ_GetVoltage(int cell) {
     return BQ_Data.voltage[cell];
+}
+
+float BQ_GetTemp(int thermistor) {
+    return BQ_Data.temp[thermistor];
+}
+
+int BQ_GetOVUVOWFault(int cell) {
+    return BQ_Data.ovuvow_fault_status[cell];
+}
+
+int BQ_GetOTUTFault(int device) {
+    return BQ_Data.otut_fault_status[device];
+}
+
+int BQ_GetBMSFault() {
+    return BQ_Data.bms_fault;
 }
