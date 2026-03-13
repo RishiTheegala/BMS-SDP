@@ -101,7 +101,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle)
 		Error_Handler();
 	}
 	else {
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6);
 		rxFlag = true;
 		rxId = RxHeader.StdId;
 		memcpy(rxBuf, RxData, 8);

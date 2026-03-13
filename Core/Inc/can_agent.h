@@ -15,7 +15,7 @@
  *
  */
 
-static bool rxFlag = false;
+static volatile bool rxFlag = false;
 static uint32_t rxId;
 static uint8_t rxBuf[8];
 

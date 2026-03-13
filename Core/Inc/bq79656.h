@@ -5,19 +5,18 @@
 #include "util.h"
 
 typedef enum {
-    STATE_INIT,
     STATE_ACTIVE,
     STATE_FAULT
-} system_state_t;
+} System_State_t;
 
 typedef struct {
     int32_t current;
     float voltage[TOTAL_CELLS];
     float temp[TOTAL_THERMISTORS];
     int ovuvow_fault_status[TOTAL_CELLS];
-    int otut_fault_status[NUM_DEVICES];
+    int otut_fault_status[NUM_BQ_DEVICES];
     int bms_fault;
-} bq_data_t;
+} BQ_Data_t;
 
 typedef enum RequestType {
     SINGLE_READ = 0b000,     // single device read
@@ -344,14 +343,18 @@ void BQ_Main(void);
 void BQ_Init(void);
 void BQ_AutoAddressing(void);
 int32_t BQ_GetCurrent(void);
-float BQ_GetVoltage(int cell);
-void BQ_ModuleBalancing(uint8_t time_thres);
+float BQ_GetVoltage(int);
+float BQ_GetTemp(int);
+int BQ_GetOVUVOWFault(int);
+int BQ_GetOTUTFault(int);
+int BQ_GetBMSFault(void);
+void BQ_ModuleBalancing(uint8_t);
 
 void BQ_ReadVoltages(void);
 void BQ_ReadTemps(void);
 void BQ_ReadCurrent(void);
 
-void BQ_HandleBalancing(uint8_t time_thres);
+void BQ_HandleBalancing(uint8_t);
 void BQ_StopBalancing(void);
 void BQ_StopModuleBalancing(void);
 void BQ_RunOpenWireCheck(void);

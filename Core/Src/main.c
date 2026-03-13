@@ -67,7 +67,7 @@ int main(void)
 	HAL_Delay(50);
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 
-	send_Wake(2400);  
+	send_Wake(2400);
 	UART_Init(&huart1);
 	Packet_Init(&huart1);
 	BQ_Init();
@@ -92,17 +92,17 @@ int main(void)
 		if(HAL_GetTick() - lastBQRead > BQ_SAMPLING_PERIOD_MS){
 			lastBQRead = HAL_GetTick();
 
-			// BQ_ReadVoltages();
+      BQ_Main();
 
-			// for(int i = 0; i < CELLS_PER_DEVICE; i++)
-			// {
-			// 	int16_t currCellVoltage = (int16_t) (BQ_GetVoltage(i) * 1000.0F);
-			// 	HAL_UART_Transmit(&huart2, (uint8_t*) &currCellVoltage, 2, HAL_MAX_DELAY);
-			// }
+      for(int i = 0; i < CELLS_PER_DEVICE; i++)
+      {
+        int16_t currCellVoltage = (int16_t) (BQ_GetVoltage(i) * 1000.0F);
+        HAL_UART_Transmit(&huart2, (uint8_t*) &currCellVoltage, 2, HAL_MAX_DELAY);
+      }
 
-			// uint16_t newLine = 0xFF;
-			// HAL_UART_Transmit(&huart2, (uint8_t*) &newLine, 2, HAL_MAX_DELAY);
-		}
+      uint16_t newLine = 0xFF;
+      HAL_UART_Transmit(&huart2, (uint8_t*) &newLine, 2, HAL_MAX_DELAY);
+    }
 
 		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {
 			Error_Handler(); // Pet the watchdog

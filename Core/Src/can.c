@@ -44,7 +44,7 @@ void MX_CAN_Init(void)
 
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN;
-  hcan.Init.Prescaler = 1;
+  hcan.Init.Prescaler = 8;
   hcan.Init.Mode = CAN_MODE_NORMAL;
   hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan.Init.TimeSeg1 = CAN_BS1_6TQ;
@@ -75,14 +75,15 @@ void MX_CAN_Init(void)
   	/* Filter configuration Error */
   	Error_Handler();
   }
+  if(HAL_CAN_Start(&hcan) != HAL_OK){
+  	Error_Handler();
+  }
   if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
   {
   	/* Notification Error */
   	Error_Handler();
   }
-  if(HAL_CAN_Start(&hcan) != HAL_OK){
-  	Error_Handler();
-  }
+
   /* USER CODE END CAN_Init 2 */
 
 }
@@ -104,7 +105,14 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     PA11 (D10)     ------> CAN_RX
     PA12 (D2)     ------> CAN_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
+    GPIO_InitStruct.Pin = GPIO_PIN_11;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;

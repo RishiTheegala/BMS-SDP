@@ -3,6 +3,10 @@
 #include "util.h"
 #include "can_agent.h"
 #include "telemetry.h"
+#include "main.h"
+
+#include "stm32f3xx_hal_def.h"
+#include "stm32f3xx_hal_gpio.h"
 
 #define HEARTBEAT_ID 0xEB
 #define NUM_CELLS 5
@@ -23,6 +27,9 @@ void Telemetry_SendHeartbeat(void){
 		.data = { 0xDE, 0xAD, 0xBE, 0xEF,
 				  0xC0, 0x01, 0xB0, 0xBA }
 	};
+	if (BQ_GetBMSFault()) {
+		heartbeat.data[0] = 0xFA; // Indicate fault in heartbeat
+	}
 	CAN_Transmit(&heartbeat.id, heartbeat.data);
 }
 
@@ -43,7 +50,19 @@ void Telemetry_Respond(uint32_t id){
 		case TEMP_INDEX:
 		{
 			if(index >= THERMISTORS_PER_DEVICE * NUM_BQ_DEVICES) return;
-			response_value = BQ_GetVoltage(index); // TODO: change to gettemp
+			response_value = BQ_GetTemp(index); // TODO: change to gettemp
+			break;
+		} 
+		case OVUVOW_FAULT_INDEX:
+		{
+			if(index >= NUM_CELLS) return;
+			response_value = BQ_GetOVUVOWFault(index);
+			break;
+		}
+		case OTUT_FAULT_INDEX:
+		{
+			if(index >= NUM_BQ_DEVICES) return;
+			response_value = BQ_GetOTUTFault(index);
 			break;
 		}
 	}
@@ -53,4 +72,10 @@ void Telemetry_Respond(uint32_t id){
 	tx_buf[1] = (response_value >> 8) & 0xFF;
 
 	CAN_Transmit(&id, tx_buf);
+}
+
+void Telemetry_Error(void) {
+	uint8_t data[8] = {0};
+	uint32_t error_id = FAULT_TELEMETRY;
+	CAN_Transmit(&error_id, data);
 }
