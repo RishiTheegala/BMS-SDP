@@ -10,5 +10,8 @@ extern uint8_t rx_buffers[NUM_BQ_DEVICES][256];
 void Packet_Init(UART_HandleTypeDef *huart);
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device);
 void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length);
+void SendReadCommand(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length);
+void ProcessPackets(int numDevices, int length);
+void ResetPacketState();
 void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length);
 #endif

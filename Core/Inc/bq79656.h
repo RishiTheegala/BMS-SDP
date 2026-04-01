@@ -9,6 +9,12 @@ typedef enum {
     STATE_FAULT
 } System_State_t;
 
+typedef enum {
+    READ_VOLTAGES,
+    READ_TEMPS,
+    READ_CURRENT
+} BQ_Read_t;
+
 typedef struct {
     int32_t current;
     float voltage[TOTAL_CELLS];

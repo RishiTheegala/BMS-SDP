@@ -17,7 +17,9 @@
 #define THERMISTOR_ROOM_TEMP 10000.0F
 
 static System_State_t current_state = STATE_ACTIVE;
+static BQ_Read_t current_read = READ_VOLTAGES;
 volatile static BQ_Data_t BQ_Data = {0};
+int read_counter = 0;
 
 void BQ_AutoAddressing(void) {
     uint8_t data[256];
@@ -56,28 +58,28 @@ void BQ_AutoAddressing(void) {
 }
 
 void BQ_ReadVoltages(void) { // TODO: Convert readings to voltage
-    uint8_t data[1];
-    data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
-    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+    // uint8_t data[1];
+    // data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
+    // SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 
 	// HAL_NVIC_DisableIRQ(CAN_RX0_IRQn);
 	for (uint8_t device = 0; device < NUM_BQ_DEVICES; device++) {
-		ReadRegister(SINGLE_READ, device, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), CELLS_PER_DEVICE * 2);
+		// ReadRegister(SINGLE_READ, device, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), CELLS_PER_DEVICE * 2);
 		for (uint8_t cell = 0; cell < CELLS_PER_DEVICE; cell++) {
-			int16_t rawRead = ((rx_buffers[0][cell * 2] << 8) | (rx_buffers[0][cell * 2 + 1]));
+			int16_t rawRead = ((rx_buffers[device][cell * 2] << 8) | (rx_buffers[device][cell * 2 + 1]));
 			BQ_Data.voltage[device * CELLS_PER_DEVICE + cell] = rawRead * ADC_RESOLUTION;
 		}
 	}
 	// HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
 
-    data[0] = 0x0;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
-    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+    // data[0] = 0x0;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
+    // SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
 }
 
 void BQ_ReadTemps(void)
 {
     // read temps from battery
-    ReadRegister(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
+    // ReadRegister(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE * 2);
 
     // fill in kNumThermistors temperatures to array
     for (int i = 0; i < NUM_BQ_DEVICES; i++)
@@ -329,6 +331,62 @@ void BQ_Init() {
     // BQ_RunOpenWireCheck();
 }
 
+void BQ_ReadAll(void) {
+    uint8_t data[1];
+    switch (current_read)
+    {
+        case READ_VOLTAGES:
+            if (read_counter == 0) {
+                data[0] = 0x80;  // CB_PAUSE, none of the other values are read until BAL_GO is set to 1
+                SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+                SendReadCommand(BROAD_READ, 0, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2), 10);
+                read_counter++;
+            }
+
+            if (UART_GetBufferSize() == 240) {
+                if (read_counter == 2) {
+                    data[0] = 0x0;  // CB_PAUSE=0 to resume, none of the other values are read until BAL_GO is set to 1
+                    SendCommandPacket(STACK_WRITE, data, 1, BAL_CTRL2, 0);
+
+                    ProcessPackets(NUM_BQ_DEVICES, 10);
+                    ResetPacketState();
+                    BQ_ReadVoltages();
+
+                    current_read = READ_TEMPS;
+                    read_counter = 0;
+                    SendReadCommand(BROAD_READ, 0, GPIO1_HI - 1, THERMISTORS_PER_DEVICE);
+                } else {
+                    ProcessPackets(NUM_BQ_DEVICES, 10);
+                    SendReadCommand(BROAD_READ, 0, (VCELL1_LO + 1) - (CELLS_PER_DEVICE * 2 - (10 * read_counter)), 10);
+                    read_counter++;
+                }
+            }
+            
+            break;
+        case READ_TEMPS:
+            if (UART_GetBufferSize() == 195) {
+                ProcessPackets(NUM_BQ_DEVICES, THERMISTORS_PER_DEVICE);
+                if (read_counter == 1) {
+                    ResetPacketState();
+                    BQ_ReadTemps();
+
+                    current_read = READ_CURRENT;
+                    read_counter = 0;
+                } else {
+                    SendReadCommand(BROAD_READ, 0, GPIO1_HI - 1 + THERMISTORS_PER_DEVICE, THERMISTORS_PER_DEVICE);
+                    read_counter++;
+                }
+            }
+            break;
+        case READ_CURRENT:
+            BQ_ReadCurrent();
+            current_read = READ_VOLTAGES;
+            break;
+        default:
+            break;
+    }
+}
+
 void BQ_Update() {
     switch (current_state)
     {
@@ -357,16 +415,11 @@ void BQ_Main() {
     switch (current_state) {
         case STATE_ACTIVE:
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET); // set sdc pin
-            BQ_ReadVoltages();
-            // BQ_ReadTemps();
-            // BQ_ReadCurrent();
+            // BQ_ReadAll();
             break;
         case STATE_FAULT:
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // set sdc pin
-            BQ_ReadVoltages();
-            // BQ_ReadTemps();
-            // BQ_ReadCurrent();
-            // BQ_ReadFaults();
+            // BQ_ReadAll();
             break;
         default:
             break;

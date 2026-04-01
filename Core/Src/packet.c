@@ -34,6 +34,7 @@ void Packet_Init(UART_HandleTypeDef *huart) {
 }
 
 uint8_t rx_buffer[256];
+int rx_reg_index = 0;
 
 void SendCommandPacket(uint8_t cmd, uint8_t *data, int length, uint16_t reg, uint8_t device) {
     CommandPacket_t packet = {0};
@@ -91,22 +92,17 @@ void DummyReadResponse(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length
     UART_ClearRX();
 }
 
-void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
+void SendReadCommand(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
     uint8_t data[1];
     data[0] = length - 1;
     SendCommandPacket(cmd, data, 1, reg, device);
-	HAL_Delay(4);
+}
 
-    int numDevices = 1;
-    if (cmd > 1) {
-        numDevices = NUM_BQ_DEVICES;
-        if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
-    }
-
+void ProcessPackets(int numDevices, int length) {
     for (int i = 0; i < numDevices; i++) {
         GetPacket();
         for (int j = 0; j < length; j++) {
-            rx_buffers[i][j] = rx_buffer[j + 4];
+            rx_buffers[i][rx_reg_index + j] = rx_buffer[j + 4];
         }
         // if (check_crc(rx_buffer, length)) {
         //     rx_buffers[i][0] = -1;
@@ -116,6 +112,25 @@ void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
         //     }
         // }
     }
+    rx_reg_index += length;
+}
+
+void ReadRegister(uint8_t cmd, uint8_t device, uint16_t reg, uint8_t length) {
+    SendReadCommand(cmd, device, reg, length);
+	HAL_Delay(4);
+
+    int numDevices = 1;
+    if (cmd > 1) {
+        numDevices = NUM_BQ_DEVICES;
+        if ((cmd & 2) && !(cmd & 4)) numDevices -= 1;
+    }
+
+    ProcessPackets(numDevices, length);
+    rx_reg_index = 0;
+}
+
+void ResetPacketState() {
+    rx_reg_index = 0;
 }
 
 void GetPacket() {
