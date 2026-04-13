@@ -14,8 +14,8 @@ static UART_Data uartData;
 
 static uint8_t pData;
 static volatile uint8_t rx_buffer[RX_BUFFER_SIZE];
-static volatile uint8_t read_index = 0;
-static volatile uint8_t write_index = 0;
+static volatile uint16_t read_index = 0;
+static volatile uint16_t write_index = 0;
 
 void UART_Init(UART_HandleTypeDef *huart) {
     uartData.huart = huart;
