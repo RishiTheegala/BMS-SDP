@@ -93,15 +93,6 @@ int main(void)
 			lastBQRead = HAL_GetTick();
 
       BQ_Main();
-
-      for(int i = 0; i < CELLS_PER_DEVICE; i++)
-      {
-        int16_t currCellVoltage = (int16_t) (BQ_GetVoltage(i) * 1000.0F);
-        HAL_UART_Transmit(&huart2, (uint8_t*) &currCellVoltage, 2, HAL_MAX_DELAY);
-      }
-
-      uint16_t newLine = 0xFF;
-      HAL_UART_Transmit(&huart2, (uint8_t*) &newLine, 2, HAL_MAX_DELAY);
     }
 
 		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {

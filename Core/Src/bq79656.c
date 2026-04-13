@@ -328,7 +328,7 @@ void BQ_Init() {
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_RST2, 0);
 
     BQ_SetProtectors(OV_THRESH_VAL, UV_THRESH_VAL, 0, 0);
-    // BQ_RunOpenWireCheck();
+    BQ_RunOpenWireCheck();
 }
 
 void BQ_ReadAll(void) {
