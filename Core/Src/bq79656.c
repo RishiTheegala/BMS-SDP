@@ -4,6 +4,7 @@
 #include "stm32f3xx_hal_cortex.h"
 #include "util.h"
 #include "gpio.h"
+#include "UART.h"
 #include <math.h>
 #include <stdint.h>
 #include "stm32f3xx_hal.h"

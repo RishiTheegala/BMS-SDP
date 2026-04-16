@@ -59,6 +59,7 @@
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 extern CAN_HandleTypeDef hcan;
 /* USER CODE BEGIN EV */
 
@@ -201,6 +202,14 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f3xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles DMA1 channel 5 global interrupt.
+  */
+void DMA1_Channel5_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+}
 
 /**
   * @brief This function handles USART1 global interrupt / USART1 wake-up interrupt through EXT line 25.
