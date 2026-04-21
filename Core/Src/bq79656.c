@@ -317,7 +317,7 @@ void BQ_Init() {
 
     data[0] = 0x0;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_MSK1, 0);
-    data[0] = 0xE0;
+    data[0] = 0b01000000;
     SendCommandPacket(BROAD_WRITE, data, 1, FAULT_MSK2, 0);
 
     // clear all faults

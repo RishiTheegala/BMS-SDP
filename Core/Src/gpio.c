@@ -89,7 +89,7 @@ void send_Wake(int us_delay) {
     HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
 
-    HAL_Delay(10);
+    HAL_Delay(50);
 }
 
 /* USER CODE END 2 */
