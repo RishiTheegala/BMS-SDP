@@ -92,7 +92,7 @@ int main(void)
 		if(HAL_GetTick() - lastBQRead > BQ_SAMPLING_PERIOD_MS){
 			lastBQRead = HAL_GetTick();
 
-      ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 1);
+      ReadRegister(BROAD_READ, 0, FAULT_SUMMARY, 12);
       // HAL_UART_Transmit(&huart2, (uint8_t*) &rx_buffers[0][0], 1, HAL_MAX_DELAY); // Debug: send number of devices with valid data over debug UART
 
       // BQ_Main();
@@ -103,8 +103,8 @@ int main(void)
       //   HAL_UART_Transmit(&huart2, (uint8_t*) &currCellVoltage, 2, HAL_MAX_DELAY);
       // }
 
-      // uint16_t newLine = 0xFF;
-      // HAL_UART_Transmit(&huart2, (uint8_t*) &newLine, 2, HAL_MAX_DELAY);
+      uint16_t newLine = 0xFF;
+      HAL_UART_Transmit(&huart2, rx_buffers[0], 2, HAL_MAX_DELAY);
     }
 
 		if (HAL_IWDG_Refresh(&hiwdg) != HAL_OK) {

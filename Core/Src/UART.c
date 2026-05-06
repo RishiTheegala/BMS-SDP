@@ -6,7 +6,7 @@
 #include "stm32f3xx_hal_uart_ex.h"
 
 #define RX_BUFFER_SIZE 256
-#define DMA_RX_BUFFER_SIZE 64
+#define DMA_RX_BUFFER_SIZE 8192
 
 extern UART_HandleTypeDef huart2;
 
@@ -16,7 +16,7 @@ typedef struct{
 
 static UART_Data uartData;
 
-static volatile uint8_t rx_buffer[RX_BUFFER_SIZE];
+static volatile uint8_t rx_buffer[RX_BUFFER_SIZE] __attribute__((section(".ccmram")));
 static uint8_t dma_rx_buffer[DMA_RX_BUFFER_SIZE];
 static volatile uint16_t dma_last_pos = 0;
 static volatile uint16_t read_index = 0;
@@ -54,7 +54,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if ((uartData.huart != NULL) && (huart->Instance == uartData.huart->Instance))
     {
-        // HAL_UART_Transmit(&huart2, (uint8_t*) &Size, 2, HAL_MAX_DELAY); // Debug: send size of received data over debug UART
+        HAL_UART_Transmit(&huart2, (uint8_t*) &Size, 2, HAL_MAX_DELAY); // Debug: send size of received data over debug UART
         uint16_t pos = Size;
         uint16_t i;
 
